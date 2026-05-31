@@ -1,0 +1,2179 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Rise of the Cyborg - Escape da Instalação EREBUS e impeça a inteligência central do Dr. Vyke. Projeto Senac Lapa Tito.">
+  <title>RISE OF THE CYBORG | Next-Gen Combat 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --purple: #9d00ff;
+      --orange: #ff6600;
+      --orange-dim: rgba(255, 102, 0, 0.2);
+      --yellow: #ffcc00;
+      --dark: #06020f;
+      --card-bg: rgba(157, 0, 255, 0.04);
+      --border: rgba(157, 0, 255, 0.2);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background: var(--dark);
+      color: #e0e8f0;
+      overflow-x: hidden;
+      cursor: none !important;
+    }
+
+    /* ===== CURSOR ===== */
+    #cursor {
+      width: 12px; height: 12px;
+      background: var(--orange);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 99999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, background 0.2s, width 0.2s, height 0.2s;
+      mix-blend-mode: screen;
+    }
+    #cursor-ring {
+      width: 36px; height: 36px;
+      border: 1.5px solid var(--purple);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 99998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.08s, border-color 0.2s, width 0.3s, height 0.3s, opacity 0.2s;
+    }
+    body.cursor-on-link #cursor { background: var(--purple); width: 18px; height: 18px; }
+    body.cursor-on-link #cursor-ring { border-color: var(--orange); width: 52px; height: 52px; }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #000; }
+    ::-webkit-scrollbar-thumb { background: var(--purple); }
+
+    /* ===== TYPOGRAPHY ===== */
+    .font-game { font-family: 'Press Start 2P', cursive; }
+    .font-hud  { font-family: 'Share Tech Mono', monospace; }
+    .font-title{ font-family: 'Orbitron', sans-serif; }
+
+    /* ===== UTILITIES ===== */
+    .neon-purple { color: var(--purple); text-shadow: 0 0 10px var(--purple), 0 0 30px rgba(157,0,255,.4); }
+    .neon-orange { color: var(--orange); text-shadow: 0 0 10px var(--orange), 0 0 30px rgba(255,102,0,.4); }
+
+    .grad-text {
+      background: linear-gradient(135deg, var(--purple) 0%, var(--orange) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ===== SCANLINES ===== */
+    .scanlines::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.15) 2px, rgba(0,0,0,.15) 4px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ===== HEX PATTERN BG ===== */
+    .hex-bg {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='98'%3E%3Cpath fill='%239d00ff' fill-opacity='0.03' d='M28 66L0 49V16L28 0l28 16v33L28 66zm0-2l26-15V18L28 2 2 18v31l26 15zM0 82l28 16 28-16V65l-28-16L0 65v17zm28 14L2 81V67l26 15 26-15v14L28 96z'/%3E%3C/svg%3E");
+    }
+
+    /* ===== NOISE OVERLAY ===== */
+    .noise::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      opacity: .4;
+      z-index: 0;
+    }
+
+    /* ===== NAVBAR ===== */
+    nav {
+      position: fixed; top: 0; width: 100%;
+      z-index: 500;
+      background: rgba(6, 2, 15, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(157,0,255,0.15);
+    }
+    .nav-inner {
+      max-width: 1280px; margin: 0 auto;
+      padding: 0 2rem;
+      height: 68px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 2rem;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none;
+    }
+    .nav-logo-icon {
+      width: 38px; height: 38px;
+      border: 1px solid var(--orange);
+      display: flex; align-items: center; justify-content: center;
+      animation: pulse-border 2s infinite;
+    }
+    @keyframes pulse-border {
+      0%,100% { box-shadow: 0 0 6px rgba(255,102,0,.3); }
+      50%      { box-shadow: 0 0 18px rgba(255,102,0,.8); }
+    }
+    .nav-logo-text { font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: .85rem; letter-spacing: 2px; color: var(--orange); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .75rem;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,.6);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color .3s;
+      position: relative;
+      padding-bottom: 4px;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0;
+      width: 0; height: 1px;
+      background: var(--orange);
+      transition: width .3s;
+    }
+    .nav-links a:hover { color: #fff; }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .7rem;
+      letter-spacing: 2px;
+      padding: 8px 20px;
+      background: transparent;
+      border: 1px solid var(--purple);
+      color: var(--purple);
+      cursor: none;
+      text-transform: uppercase;
+      transition: all .25s;
+    }
+    .nav-cta:hover { background: var(--purple); color: #fff; box-shadow: 0 0 10px var(--purple); }
+    .hamburger { display: none; background: none; border: none; color: var(--orange); font-size: 1.5rem; cursor: none; }
+
+    /* ===== HERO ===== */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding-top: 68px;
+    }
+    #hero-canvas { position: absolute; inset: 0; z-index: 0; }
+    .hero-inner {
+      max-width: 1280px; margin: 0 auto; padding: 5rem 2rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+      position: relative; z-index: 2;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .65rem;
+      letter-spacing: 3px;
+      color: var(--orange);
+      border: 1px solid rgba(255,102,0,.3);
+      background: rgba(255,102,0,.05);
+      padding: 6px 16px;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+    .hero-badge span { animation: blink 1.2s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    .hero-title {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2.8rem, 6vw, 5.5rem);
+      line-height: 1.05;
+      letter-spacing: -1px;
+      margin-bottom: 1.5rem;
+    }
+    .hero-sub {
+      font-size: 1.2rem;
+      color: rgba(255,255,255,.55);
+      line-height: 1.7;
+      max-width: 480px;
+      margin-bottom: 2.5rem;
+    }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .75rem;
+      letter-spacing: 2px;
+      padding: 16px 36px;
+      background: var(--purple);
+      color: #fff;
+      border: none;
+      cursor: none;
+      text-transform: uppercase;
+      transition: all .25s;
+      text-decoration: none;
+    }
+    .btn-primary:hover { background: #fff; color: #000; transform: translateY(-2px); box-shadow: 0 8px 30px rgba(157,0,255,.4); }
+    .btn-secondary {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .75rem;
+      letter-spacing: 2px;
+      padding: 16px 36px;
+      background: transparent;
+      color: var(--orange);
+      border: 1px solid var(--orange);
+      cursor: none;
+      text-transform: uppercase;
+      transition: all .25s;
+      text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .btn-secondary:hover { background: var(--orange); color: #000; }
+    .hero-stats {
+      display: flex; gap: 2.5rem; margin-top: 3rem;
+      border-top: 1px solid rgba(255,255,255,.08);
+      padding-top: 2rem;
+    }
+    .stat-item {}
+    .stat-val { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--orange); }
+    .stat-label { font-size: .75rem; color: rgba(255,255,255,.4); letter-spacing: 2px; text-transform: uppercase; font-family: 'Share Tech Mono', monospace; }
+
+    /* Hero visual */
+    .hero-visual {
+      position: relative;
+    }
+    .hero-frame {
+      position: relative;
+      background: linear-gradient(135deg, rgba(157,0,255,.05), rgba(255,102,0,.05));
+      border: 1px solid rgba(157,0,255,.25);
+      aspect-ratio: 1;
+      overflow: hidden;
+    }
+    .hero-frame::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at center, rgba(157,0,255,.08) 0%, transparent 70%);
+    }
+    .corner-tl, .corner-tr, .corner-bl, .corner-br {
+      position: absolute; width: 20px; height: 20px;
+    }
+    .corner-tl { top: -1px; left: -1px; border-top: 2px solid var(--orange); border-left: 2px solid var(--orange); }
+    .corner-tr { top: -1px; right: -1px; border-top: 2px solid var(--orange); border-right: 2px solid var(--orange); }
+    .corner-bl { bottom: -1px; left: -1px; border-bottom: 2px solid var(--orange); border-left: 2px solid var(--orange); }
+    .corner-br { bottom: -1px; right: -1px; border-bottom: 2px solid var(--orange); border-right: 2px solid var(--orange); }
+    .hero-frame-inner {
+      position: relative;
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cyborg-svg-wrap {
+      position: relative;
+      z-index: 2;
+    }
+    .hud-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(255,102,0,.2);
+      animation: ring-spin linear infinite;
+    }
+    .hud-ring:nth-child(1) { width: 200px; height: 200px; top: 50%; left: 50%; transform: translate(-50%,-50%); animation-duration: 12s; border-style: dashed; }
+    .hud-ring:nth-child(2) { width: 270px; height: 270px; top: 50%; left: 50%; transform: translate(-50%,-50%); animation-duration: 20s; animation-direction: reverse; border-color: rgba(157,0,255,.15); }
+    .hud-ring:nth-child(3) { width: 340px; height: 340px; top: 50%; left: 50%; transform: translate(-50%,-50%); animation-duration: 30s; border-color: rgba(255,102,0,.1); border-style: dotted; }
+    @keyframes ring-spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+    .hud-dot {
+      position: absolute;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--orange);
+      box-shadow: 0 0 8px var(--orange);
+    }
+    .hud-scanline {
+      position: absolute;
+      left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255,102,0,.4), transparent);
+      animation: scan-move 3s linear infinite;
+    }
+    @keyframes scan-move {
+      0% { top: 0%; opacity: 1; }
+      80% { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+    .hero-data-row {
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .6rem;
+      color: rgba(255,102,0,.6);
+      letter-spacing: 2px;
+      margin-top: .5rem;
+    }
+    .hero-data-dot {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--orange);
+      animation: blink 1.5s step-end infinite;
+    }
+    .floating-tag {
+      position: absolute;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .6rem;
+      letter-spacing: 1px;
+      color: rgba(157,0,255,.7);
+      background: rgba(157,0,255,.06);
+      border: 1px solid rgba(157,0,255,.2);
+      padding: 4px 10px;
+    }
+    .tag-tl { top: 12%; left: -10px; }
+    .tag-br { bottom: 15%; right: -10px; }
+    .tag-tr { top: 40%; right: -10px; color: rgba(255,102,0,.7); background: rgba(255,102,0,.06); border-color: rgba(255,102,0,.2); }
+
+    /* ===== SECTION HEADER ===== */
+    .section-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .65rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: .75rem;
+    }
+    .section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      letter-spacing: -1px;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+    .section-desc {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,.5);
+      line-height: 1.7;
+      max-width: 600px;
+    }
+    .section-line {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .section-line::before {
+      content: '';
+      width: 40px; height: 2px;
+      background: var(--orange);
+      flex-shrink: 0;
+    }
+
+    /* ===== TRAILER ===== */
+    #trailer {
+      padding: 7rem 2rem;
+      background: #000;
+    }
+    .trailer-inner { max-width: 900px; margin: 0 auto; text-align: center; }
+    .trailer-video-wrap {
+      position: relative;
+      margin-top: 3rem;
+      border: 1px solid rgba(157,0,255,.25);
+    }
+    .trailer-video-wrap::before, .trailer-video-wrap::after {
+      content: '';
+      position: absolute;
+      width: 40px; height: 40px;
+    }
+    .trailer-video-wrap::before { top: -1px; left: -1px; border-top: 2px solid var(--orange); border-left: 2px solid var(--orange); }
+    .trailer-video-wrap::after  { bottom: -1px; right: -1px; border-bottom: 2px solid var(--purple); border-right: 2px solid var(--purple); }
+    .trailer-video-wrap iframe {
+      width: 100%; aspect-ratio: 16/9; display: block;
+    }
+    .trailer-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .65rem;
+      letter-spacing: 3px;
+      color: rgba(255,255,255,.3);
+      margin-top: 1.2rem;
+    }
+
+    /* ===== HISTORIA ===== */
+    #historia {
+      padding: 7rem 2rem;
+      background: var(--dark);
+      position: relative;
+    }
+    .historia-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start;
+    }
+    .historia-visual {
+      position: relative;
+    }
+    .log-panel {
+      background: rgba(0,0,0,.6);
+      border: 1px solid rgba(157,0,255,.2);
+      padding: 1.5rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .72rem;
+      line-height: 2;
+    }
+    .log-line { color: rgba(157,0,255,.7); }
+    .log-line .log-time { color: rgba(255,255,255,.3); margin-right: 8px; }
+    .log-line .log-warn { color: var(--orange); }
+    .log-line .log-err  { color: #ff3366; }
+    .log-line .log-ok   { color: #00ff88; }
+    .blink-cursor { animation: blink 1s step-end infinite; }
+    .lore-block { margin-bottom: 2rem; }
+    .lore-block h4 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: .85rem;
+      color: var(--orange);
+      letter-spacing: 2px;
+      margin-bottom: .75rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .lore-block h4::before { content: '//'; color: var(--purple); }
+    .lore-block p { font-size: 1rem; color: rgba(255,255,255,.6); line-height: 1.8; }
+
+    /* ===== GAMEPLAY ===== */
+    #gameplay {
+      padding: 7rem 2rem;
+      background: linear-gradient(180deg, #000 0%, #06020f 100%);
+    }
+    .gameplay-inner { max-width: 1280px; margin: 0 auto; }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5px;
+      margin-top: 3rem;
+      background: rgba(157,0,255,.1);
+    }
+    .feature-card {
+      background: rgba(6, 2, 15, .95);
+      padding: 2.5rem 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: background .3s;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--orange), transparent);
+      transform: scaleX(0);
+      transition: transform .4s;
+    }
+    .feature-card:hover { background: rgba(157,0,255,.04); }
+    .feature-card:hover::before { transform: scaleX(1); }
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 1.25rem;
+      color: var(--orange);
+    }
+    .feature-card:nth-child(2n) .feature-icon { color: var(--purple); }
+    .feature-card:nth-child(3n) .feature-icon { color: var(--orange); }
+    .feature-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: .8rem;
+      letter-spacing: 2px;
+      color: #fff;
+      margin-bottom: .75rem;
+    }
+    .feature-desc { font-size: .95rem; color: rgba(255,255,255,.5); line-height: 1.7; }
+
+    /* ===== UPGRADES ===== */
+    #upgrades {
+      padding: 7rem 2rem;
+      background: var(--dark);
+      position: relative;
+      overflow: hidden;
+    }
+    #upgrades::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(157,0,255,.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .upgrades-inner { max-width: 1280px; margin: 0 auto; }
+    .upgrades-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .upgrade-card {
+      background: rgba(0,0,0,.5);
+      border: 1px solid rgba(157,0,255,.12);
+      padding: 2rem;
+      display: flex; gap: 1.5rem; align-items: flex-start;
+      transition: all .35s;
+      cursor: none;
+    }
+    .upgrade-card:hover {
+      border-color: rgba(255,102,0,.4);
+      background: rgba(255,102,0,.04);
+      transform: translateX(6px);
+    }
+    .upgrade-num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: rgba(157,0,255,.15);
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .upgrade-info {}
+    .upgrade-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: .85rem;
+      letter-spacing: 2px;
+      color: #fff;
+      margin-bottom: .5rem;
+    }
+    .upgrade-desc { font-size: .95rem; color: rgba(255,255,255,.5); line-height: 1.7; margin-bottom: 1rem; }
+    .upgrade-bar { height: 3px; background: rgba(255,255,255,.08); position: relative; overflow: hidden; }
+    .upgrade-fill { height: 100%; background: linear-gradient(90deg, var(--purple), var(--orange)); }
+    .upgrade-val { font-family: 'Share Tech Mono', monospace; font-size: .65rem; color: var(--orange); margin-top: 4px; letter-spacing: 2px; }
+
+    /* ===== PAL DOSSIER ===== */
+    #pal {
+      padding: 7rem 2rem;
+      background: #000;
+    }
+    .pal-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: grid; grid-template-columns: 1.2fr 1fr; gap: 5rem; align-items: center;
+    }
+    .pal-profile {
+      background: rgba(0,0,0,.8);
+      border: 1px solid rgba(255,102,0,.25);
+      padding: 2.5rem;
+      position: relative;
+    }
+    .pal-profile::before {
+      content: 'ACESSO RESTRITO';
+      position: absolute; top: -10px; left: 20px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .6rem;
+      letter-spacing: 3px;
+      color: var(--orange);
+      background: #000;
+      padding: 0 8px;
+    }
+    .pal-avatar {
+      width: 100px; height: 100px;
+      border: 2px solid var(--orange);
+      background: linear-gradient(135deg, rgba(255,102,0,.1), rgba(157,0,255,.1));
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.5rem;
+      font-size: 3rem;
+      color: var(--orange);
+      position: relative;
+    }
+    .pal-avatar::after {
+      content: '';
+      position: absolute; inset: 4px;
+      border: 1px solid rgba(255,102,0,.3);
+      animation: pal-spin 8s linear infinite;
+      clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+    }
+    @keyframes pal-spin { to { transform: rotate(360deg); } }
+    .pal-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--orange);
+      margin-bottom: .25rem;
+    }
+    .pal-code { font-family: 'Share Tech Mono', monospace; font-size: .7rem; letter-spacing: 3px; color: rgba(255,255,255,.35); margin-bottom: 1.5rem; }
+    .pal-attr { margin-bottom: .75rem; }
+    .pal-attr-label { font-family: 'Share Tech Mono', monospace; font-size: .6rem; letter-spacing: 2px; color: rgba(255,255,255,.4); text-transform: uppercase; }
+    .pal-attr-val { font-size: .95rem; color: rgba(255,255,255,.8); margin-top: 2px; }
+    .pal-lore h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.4rem;
+      color: #fff;
+      margin-bottom: 1.5rem;
+    }
+    .pal-lore p { font-size: 1rem; color: rgba(255,255,255,.55); line-height: 1.85; margin-bottom: 1rem; }
+    .quote-block {
+      border-left: 3px solid var(--orange);
+      padding: 1rem 1.5rem;
+      margin: 1.5rem 0;
+      background: rgba(255,102,0,.04);
+      font-style: italic;
+      color: rgba(255,255,255,.7);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    /* ===== GALERIA ===== */
+    #galeria {
+      padding: 7rem 2rem;
+      background: #04090f;
+    }
+    .gallery-inner { max-width: 1280px; margin: 0 auto; }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 3rem;
+    }
+    .gallery-item {
+      aspect-ratio: 16/10;
+      background: rgba(0,0,0,.6);
+      border: 1px solid rgba(157,0,255,.1);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      cursor: none;
+      transition: all .35s;
+    }
+    .gallery-item:hover { border-color: var(--orange); }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+    .gallery-item:hover .gallery-icon { transform: scale(1.1); }
+    .gallery-num {
+      position: absolute; top: 8px; left: 12px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .6rem;
+      color: rgba(157,0,255,.4);
+      letter-spacing: 2px;
+    }
+    .gallery-icon { font-size: 2.5rem; color: rgba(255,255,255,.1); transition: transform .35s; }
+    .gallery-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(157,0,255,.08), rgba(255,102,0,.08));
+      opacity: 0; transition: opacity .35s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .gallery-overlay span {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .65rem;
+      letter-spacing: 3px;
+      color: rgba(255,255,255,.6);
+    }
+    .gallery-item:nth-child(1) { grid-column: span 2; }
+    .gallery-item:nth-child(5) { grid-column: span 2; }
+
+    /* ===== NEWSLETTER ===== */
+    #newsletter {
+      padding: 7rem 2rem;
+      background: #000;
+    }
+    .nl-inner {
+      max-width: 700px; margin: 0 auto; text-align: center;
+    }
+    .nl-form {
+      display: flex; gap: 0; margin-top: 2.5rem;
+      max-width: 480px; margin-left: auto; margin-right: auto;
+    }
+    .nl-input {
+      flex: 1;
+      background: rgba(157,0,255,.04);
+      border: 1px solid rgba(157,0,255,.2);
+      border-right: none;
+      color: #fff;
+      padding: 14px 20px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .75rem;
+      letter-spacing: 1px;
+      outline: none;
+      transition: border-color .3s;
+    }
+    .nl-input:focus { border-color: var(--orange); }
+    .nl-input::placeholder { color: rgba(255,255,255,.25); }
+    .nl-btn {
+      background: var(--orange);
+      border: 1px solid var(--orange);
+      color: #000;
+      padding: 14px 28px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .7rem;
+      letter-spacing: 2px;
+      cursor: none;
+      text-transform: uppercase;
+      transition: background .25s;
+      white-space: nowrap;
+    }
+    .nl-btn:hover { background: #fff; }
+    .nl-disclaimer { font-size: .75rem; color: rgba(255,255,255,.25); margin-top: 1rem; font-family: 'Share Tech Mono', monospace; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      padding: 3rem 2rem;
+      border-top: 1px solid rgba(255,255,255,.05);
+      background: #000;
+    }
+    .footer-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 2rem;
+    }
+    .footer-logo { font-family: 'Orbitron', sans-serif; font-size: .8rem; color: var(--orange); letter-spacing: 3px; }
+    .footer-quote { font-size: .9rem; color: rgba(255,255,255,.3); font-style: italic; }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { font-family: 'Share Tech Mono', monospace; font-size: .65rem; letter-spacing: 2px; color: rgba(255,255,255,.3); text-decoration: none; text-transform: uppercase; transition: color .3s; }
+    .footer-links a:hover { color: var(--orange); }
+
+    /* ===== NOTIFICATIONS ===== */
+    #notif-container {
+      position: fixed; bottom: 24px; right: 24px;
+      z-index: 99999;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .notif {
+      background: rgba(0,0,0,.92);
+      border-left: 3px solid var(--orange);
+      padding: 12px 20px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .7rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      max-width: 360px;
+      animation: notif-in .3s ease-out;
+      box-shadow: 0 4px 20px rgba(0,0,0,.5), 0 0 20px rgba(255,102,0,.1);
+    }
+    @keyframes notif-in { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .notif-warn { border-color: var(--orange); }
+    .notif-err  { border-color: var(--purple); }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.96);
+      z-index: 99998;
+      display: none; align-items: center; justify-content: center;
+      animation: fade-in .2s ease;
+    }
+    .modal-overlay.active { display: flex; }
+    @keyframes fade-in { from { opacity: 0; } }
+    .modal-box {
+      text-align: center;
+      padding: 3rem;
+      border: 1px solid rgba(255,102,0,.2);
+      max-width: 480px;
+      background: rgba(6,2,15,0.95);
+      box-shadow: 0 0 30px rgba(255,102,0,.2);
+      max-height: 80vh;
+      overflow-y: auto;
+      animation: modal-pop .4s ease;
+    }
+    @keyframes modal-pop { from { transform: scale(0.9); opacity: 0; } }
+    #tech-section, #personal-section {
+      transition: opacity 0.3s ease;
+      opacity: 1;
+    }
+    .modal-icon { font-size: 4rem; margin-bottom: 1rem; animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 50% { opacity: .4; transform: scale(1.1); } }
+    .modal-title { font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--orange); letter-spacing: 3px; margin-bottom: .5rem; }
+    .modal-sub { font-family: 'Share Tech Mono', monospace; font-size: .7rem; color: rgba(255,255,255,.4); }
+    .btn-primary { background: transparent; border: 1px solid var(--purple); color: var(--purple); cursor: pointer; font-family: 'Share Tech Mono', monospace; padding: 10px 32px; font-size: .8rem; transition: all 0.3s; }
+    .btn-primary:hover { background: var(--purple); color: #fff; box-shadow: 0 0 15px var(--purple); }
+
+    /* ===== MOBILE ===== */
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .hero-visual { max-width: 380px; margin: 0 auto; }
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: block; }
+      .historia-inner, .pal-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .team-grid { grid-template-columns: 1fr 1fr !important; }
+      .upgrades-grid { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; }
+      .gallery-item:nth-child(1), .gallery-item:nth-child(5) { grid-column: span 1; }
+    }
+    @media (max-width: 600px) {
+      .features-grid { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .hero-stats { gap: 1.5rem; }
+      .nl-form { flex-direction: column; }
+      .nl-input { border-right: 1px solid rgba(157,0,255,.2); }
+      .team-grid { grid-template-columns: 1fr !important; }
+    }
+
+    /* ===== MOBILE MENU ===== */
+    #mobile-nav {
+      position: fixed; inset: 0;
+      background: rgba(6,2,15,.97);
+      z-index: 9000;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2rem;
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s;
+    }
+    #mobile-nav.open { opacity: 1; pointer-events: all; }
+    #mobile-nav a {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 3px;
+      color: rgba(255,255,255,.6);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    #mobile-nav a:hover { color: var(--orange); }
+    #mobile-nav-close {
+      position: absolute; top: 24px; right: 24px;
+      background: none; border: none;
+      color: rgba(255,255,255,.5);
+      font-size: 1.5rem; cursor: none;
+    }
+
+    /* ===== SCROLL REVEAL ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== BOOT SCREEN ===== */
+    #boot-screen {
+      position: fixed; inset: 0;
+      background: #000;
+      z-index: 999999;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 1.5rem;
+      transition: opacity .6s ease, visibility .6s ease;
+    }
+    #boot-screen.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+    .boot-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.2rem, 4vw, 2rem);
+      font-weight: 900;
+      letter-spacing: 6px;
+      color: var(--orange);
+      text-shadow: 0 0 30px rgba(255,102,0,.6);
+      animation: boot-pulse 1s ease-in-out infinite;
+    }
+    @keyframes boot-pulse { 50% { text-shadow: 0 0 60px rgba(255,102,0,1), 0 0 100px rgba(255,102,0,.5); } }
+    .boot-bar-wrap {
+      width: min(400px, 80vw);
+      height: 3px;
+      background: rgba(255,102,0,.1);
+      overflow: hidden;
+    }
+    .boot-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--orange), var(--purple));
+      width: 0%;
+      transition: width 2s cubic-bezier(.4,0,.2,1);
+    }
+    .boot-lines {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .65rem;
+      letter-spacing: 2px;
+      color: rgba(255,102,0,.5);
+      text-align: center;
+      min-height: 1.2em;
+    }
+    .boot-pct {
+      font-family: 'Orbitron', sans-serif;
+      font-size: .75rem;
+      letter-spacing: 3px;
+      color: rgba(255,102,0,.4);
+    }
+
+    /* ===== GLITCH TEXT ===== */
+    .glitch {
+      position: relative;
+    }
+    .glitch::before, .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: transparent;
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+    .glitch::before {
+      left: 2px;
+      text-shadow: -2px 0 var(--purple);
+      -webkit-text-fill-color: transparent;
+      clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%);
+      animation: glitch-anim-1 4s infinite linear;
+    }
+    .glitch::after {
+      left: -2px;
+      text-shadow: 2px 0 var(--orange);
+      -webkit-text-fill-color: transparent;
+      clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%);
+      animation: glitch-anim-2 4s infinite linear;
+    }
+    @keyframes glitch-anim-1 {
+      0%,92%,100% { clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%); transform: translate(0); }
+      93% { clip-path: polygon(0 5%, 100% 5%, 100% 25%, 0 25%); transform: translate(3px, -2px); }
+      95% { clip-path: polygon(0 65%, 100% 65%, 100% 75%, 0 75%); transform: translate(-3px, 2px); }
+      97% { clip-path: polygon(0 35%, 100% 35%, 100% 55%, 0 55%); transform: translate(2px, 1px); }
+    }
+    @keyframes glitch-anim-2 {
+      0%,89%,100% { clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%); transform: translate(0); }
+      90% { clip-path: polygon(0 40%, 100% 40%, 100% 60%, 0 60%); transform: translate(-3px, 2px); }
+      92% { clip-path: polygon(0 70%, 100% 70%, 100% 90%, 0 90%); transform: translate(3px, -1px); }
+      94% { clip-path: polygon(0 10%, 100% 10%, 100% 30%, 0 30%); transform: translate(-2px, 0); }
+    }
+
+    /* ===== HERO VISUAL ENHANCED ===== */
+    .hero-frame-inner {
+      position: relative;
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cyborg-svg-wrap {
+      position: relative;
+      z-index: 2;
+    }
+    .hud-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(255,102,0,.2);
+      animation: ring-spin linear infinite;
+    }
+    .hud-ring:nth-child(1) { width: 200px; height: 200px; top: 50%; left: 50%; transform: translate(-50%,-50%); animation-duration: 12s; border-style: dashed; }
+    .hud-ring:nth-child(2) { width: 270px; height: 270px; top: 50%; left: 50%; transform: translate(-50%,-50%); animation-duration: 20s; animation-direction: reverse; border-color: rgba(157,0,255,.15); }
+    .hud-ring:nth-child(3) { width: 340px; height: 340px; top: 50%; left: 50%; transform: translate(-50%,-50%); animation-duration: 30s; border-color: rgba(255,102,0,.1); border-style: dotted; }
+    @keyframes ring-spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+    .hud-dot {
+      position: absolute;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--orange);
+      box-shadow: 0 0 8px var(--orange);
+    }
+    .hud-scanline {
+      position: absolute;
+      left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255,102,0,.4), transparent);
+      animation: scan-move 3s linear infinite;
+    }
+    @keyframes scan-move {
+      0% { top: 0%; opacity: 1; }
+      80% { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+    .hero-data-row {
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .6rem;
+      color: rgba(255,102,0,.6);
+      letter-spacing: 2px;
+      margin-top: .5rem;
+    }
+    .hero-data-dot {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--orange);
+      animation: blink 1.5s step-end infinite;
+    }
+
+    /* ===== GALLERY SCENES ===== */
+    .gallery-scene {
+      position: absolute; inset: 0;
+      overflow: hidden;
+    }
+    .scene-1 { background: linear-gradient(135deg, #05020c 0%, #1a0033 100%); }
+    .scene-1 .s-floor { position:absolute; bottom:0; left:0; right:0; height:35%; background: linear-gradient(0deg, rgba(80,0,150,.8), transparent); border-top: 1px solid rgba(255,102,0,.15); }
+    .scene-1 .s-grid { position:absolute; inset:0; background-image: linear-gradient(rgba(255,102,0,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,102,0,.04) 1px, transparent 1px); background-size: 30px 30px; }
+    .scene-1 .s-building { position:absolute; bottom:0; background: rgba(30,0,60,.9); border:1px solid rgba(255,102,0,.12); }
+    .scene-1 .s-glow { position:absolute; border-radius:50%; filter:blur(30px); }
+    .scene-2 { background: #030107; }
+    .scene-2 .s-circle { position:absolute; border-radius:50%; border:1px solid; }
+    .scene-3 { background: linear-gradient(135deg, #0a0010 0%, #150020 100%); }
+    .scene-4 { background: linear-gradient(180deg, #0c001a 0%, #040008 100%); }
+    .scene-5 { background: linear-gradient(135deg, #1a0800 0%, #331200 100%); }
+    .scene-6 { background: #000; }
+
+    /* ===== FEATURE CARD GLITCH ===== */
+    .feature-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(transparent 0%, rgba(255,102,0,.03) 50%, transparent 100%);
+      transform: translateY(-100%);
+      transition: transform .5s;
+    }
+    .feature-card:hover::after { transform: translateY(100%); }
+
+    /* ===== RADAR SCAN ===== */
+    .radar-wrap {
+      position: relative;
+      width: 160px; height: 160px;
+      margin: 0 auto 1.5rem;
+    }
+    .radar-circle {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(255,102,0,.2);
+    }
+    .radar-circle:nth-child(1) { inset: 0; }
+    .radar-circle:nth-child(2) { inset: 25%; }
+    .radar-circle:nth-child(3) { inset: 50%; border-color: rgba(255,102,0,.4); }
+    .radar-line { position:absolute; top:50%; left:50%; width:50%; height:1px; background: linear-gradient(90deg, rgba(255,102,0,.6), transparent); transform-origin: left center; animation: radar-spin 3s linear infinite; }
+    .radar-sweep { position:absolute; inset:0; border-radius:50%; background: conic-gradient(from 0deg, rgba(255,102,0,.15) 0deg, transparent 60deg); animation: radar-spin 3s linear infinite; }
+    .radar-cross { position:absolute; inset:0; }
+    .radar-cross::before { content:''; position:absolute; top:50%; left:0; right:0; height:1px; background: rgba(255,102,0,.15); transform:translateY(-50%); }
+    .radar-cross::after { content:''; position:absolute; left:50%; top:0; bottom:0; width:1px; background: rgba(255,102,0,.15); transform:translateX(-50%); }
+    .radar-blip { position:absolute; width:5px; height:5px; border-radius:50%; background:var(--orange); box-shadow:0 0 8px var(--orange); }
+    .radar-blip:nth-child(5) { top:25%; left:60%; animation: blip-pulse 2s ease-in-out infinite; }
+    .radar-blip:nth-child(6) { top:65%; left:35%; animation: blip-pulse 2s ease-in-out infinite .7s; }
+    .radar-blip:nth-child(7) { top:40%; left:25%; animation: blip-pulse 2s ease-in-out infinite 1.4s; }
+    @keyframes radar-spin { to { transform: rotate(360deg); } }
+    @keyframes blip-pulse { 50% { opacity: .1; transform: scale(2); } }
+
+    /* ===== STAT COUNTER ANIMATION ===== */
+    .stat-val { transition: color .3s; }
+
+    /* ===== SECTION STAGGER ===== */
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
+    .reveal-delay-5 { transition-delay: .5s; }
+
+    /* ===== NAV ACTIVE ===== */
+    .nav-links a.active { color: #fff; }
+    .nav-links a.active::after { width: 100%; }
+
+    /* ===== UPGRADE CARD ENHANCED ===== */
+    .upgrade-card { position: relative; overflow: hidden; }
+    .upgrade-card::after {
+      content: '';
+      position: absolute;
+      top: -50%; right: -50%;
+      width: 40px; height: 200%;
+      background: rgba(255,255,255,.04);
+      transform: rotate(20deg) translateX(0);
+      transition: transform .5s ease;
+    }
+    .upgrade-card:hover::after { transform: rotate(20deg) translateX(-500px); }
+
+    /* ===== TYPEWRITER ===== */
+    .log-panel .log-line { opacity: 0; transform: translateX(-8px); transition: opacity .3s, transform .3s; }
+    .log-panel .log-line.typed { opacity: 1; transform: translateX(0); }
+  </style>
+</head>
+<body class="hex-bg">
+
+  <!-- BOOT SCREEN -->
+  <div id="boot-screen">
+    <div class="boot-logo">RISE OF THE CYBORG</div>
+    <div class="boot-bar-wrap"><div class="boot-bar" id="boot-bar"></div></div>
+    <div class="boot-pct" id="boot-pct">0%</div>
+    <div class="boot-lines" id="boot-lines">INICIALIZANDO SISTEMAS...</div>
+  </div>
+
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+  <div id="notif-container"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <div class="nav-logo-icon"><i class="fas fa-microchip" style="color:var(--orange);font-size:.9rem;"></i></div>
+        <span class="nav-logo-text">RISE OF THE CYBORG</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#historia">Arquivos</a></li>
+        <li><a href="#capitulos">Capítulos</a></li>
+        <li><a href="#trailer">Trailer</a></li>
+        <li><a href="#gameplay">Mecânicas</a></li>
+        <li><a href="#upgrades">Hardware</a></li>
+        <li><a href="#pal">NEXUS Core</a></li>
+      </ul>
+      <button class="nav-cta" onclick="triggerDemo()">CONECTAR_</button>
+      <button class="hamburger" id="ham-btn"><i class="fas fa-bars"></i></button>
+    </div>
+  </nav>
+
+  <!-- MOBILE NAV -->
+  <div id="mobile-nav">
+    <button id="mobile-nav-close"><i class="fas fa-times"></i></button>
+    <a href="#historia" onclick="closeMobileNav()">ARQUIVOS</a>
+    <a href="#trailer" onclick="closeMobileNav()">TRAILER</a>
+    <a href="#gameplay" onclick="closeMobileNav()">MECÂNICAS</a>
+    <a href="#capitulos" onclick="closeMobileNav()">CAPÍTULOS</a>
+    <a href="#upgrades" onclick="closeMobileNav()">HARDWARE</a>
+    <a href="#pal" onclick="closeMobileNav()">NEXUS CORE</a>
+    <a href="#equipe" onclick="closeMobileNav()">EQUIPE</a>
+    <a href="#newsletter" onclick="closeMobileNav()">SINAL</a>
+  </div>
+
+  <!-- HERO -->
+  <section id="hero" class="scanlines">
+    <canvas id="hero-canvas"></canvas>
+    <div class="hero-inner">
+      <div>
+        <div class="hero-badge"><span>▌</span> AGENTE LUKE — PROJETO NEXUS — MEMÓRIA ADORMECIDA</div>
+        <h1 class="hero-title">
+          <span class="grad-text glitch" data-text="Mais que">Mais que</span><br>
+          <span class="glitch" data-text="Máquina." style="color:#fff;">Máquina.</span>
+        </h1>
+        <p class="hero-sub">No ano de 2148, Luke, um agente de elite da ACNM, foi atraído para uma emboscada na misteriosa Instalação EREBUS. Transformado contra a sua vontade no primeiro ciborgue do Projeto NEXUS pelo renegado Dr. Vyke, ele acorda décadas depois em meio a uma falha catastrófica. Agora, metade máquina, ele precisa escapar, sobreviver e impedir a singularidade tecnológica.</p>
+        <div class="hero-btns">
+          <button class="btn-primary" onclick="triggerDemo()">DESPERTAR.EXE</button>
+          <a href="#trailer" class="btn-secondary"><i class="fas fa-play"></i> Assistir Trailer</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-val neon-orange" id="stat-upgrades">0</div>
+            <div class="stat-label">Upgrades</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-val neon-orange" id="stat-zonas">0</div>
+            <div class="stat-label">Continentes</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-val neon-orange" id="stat-ano">----</div>
+            <div class="stat-label">Lançamento</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual reveal">
+        <div class="hero-frame" style="min-height:420px;">
+          <div class="corner-tl"></div><div class="corner-tr"></div>
+          <div class="corner-bl"></div><div class="corner-br"></div>
+          <div class="hud-scanline"></div>
+          <div class="hero-frame-inner">
+            <div class="hud-ring"></div>
+            <div class="hud-ring"></div>
+            <div class="hud-ring"></div>
+            <div class="cyborg-svg-wrap">
+              <svg width="160" height="200" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Head (Roxo com circuito laranja) -->
+                <rect x="50" y="10" width="60" height="60" rx="8" stroke="#ff6600" stroke-width="1.5" fill="rgba(157,0,255,0.06)"/>
+                <!-- Eye sockets -->
+                <rect x="60" y="28" width="15" height="10" rx="2" fill="rgba(157,0,255,0.15)" stroke="#9d00ff" stroke-width="1"/>
+                <rect x="85" y="28" width="15" height="10" rx="2" fill="rgba(255,102,0,0.2)" stroke="#ff6600" stroke-width="1"/>
+                <!-- Eye glow left -->
+                <ellipse cx="67.5" cy="33" rx="4" ry="3" fill="#9d00ff" opacity="0.8">
+                  <animate attributeName="opacity" values="0.8;0.2;0.8" dur="2.5s" repeatCount="indefinite"/>
+                </ellipse>
+                <!-- Eye glow right (Cibernético) -->
+                <ellipse cx="92.5" cy="33" rx="4" ry="3" fill="#ff6600" opacity="0.9">
+                  <animate attributeName="opacity" values="0.9;0.1;0.9" dur="1.8s" repeatCount="indefinite"/>
+                </ellipse>
+                <!-- Head circuit lines -->
+                <line x1="50" y1="35" x2="38" y2="35" stroke="rgba(255,102,0,0.3)" stroke-width="1"/>
+                <line x1="38" y1="35" x2="38" y2="50" stroke="rgba(255,102,0,0.3)" stroke-width="1"/>
+                <line x1="110" y1="40" x2="122" y2="40" stroke="rgba(157,0,255,0.3)" stroke-width="1"/>
+                <line x1="122" y1="40" x2="122" y2="55" stroke="rgba(157,0,255,0.3)" stroke-width="1"/>
+                <!-- Antenna -->
+                <line x1="80" y1="10" x2="80" y2="0" stroke="#ff6600" stroke-width="1"/>
+                <circle cx="80" cy="0" r="2" fill="#ff6600">
+                  <animate attributeName="r" values="2;4;2" dur="1s" repeatCount="indefinite"/>
+                </circle>
+                <!-- Neck -->
+                <rect x="70" y="70" width="20" height="15" fill="rgba(157,0,255,0.06)" stroke="rgba(157,0,255,0.3)" stroke-width="1"/>
+                <!-- Body/Torso -->
+                <rect x="35" y="85" width="90" height="75" rx="4" stroke="#ff6600" stroke-width="1.5" fill="rgba(157,0,255,0.04)"/>
+                <!-- Chest core -->
+                <rect x="60" y="95" width="40" height="30" rx="3" stroke="rgba(255,102,0,0.4)" stroke-width="1" fill="rgba(157,0,255,0.06)"/>
+                <ellipse cx="80" cy="110" rx="12" ry="12" stroke="#9d00ff" stroke-width="1" fill="rgba(157,0,255,0.05)">
+                  <animate attributeName="stroke-opacity" values="1;0.2;1" dur="2s" repeatCount="indefinite"/>
+                </ellipse>
+                <ellipse cx="80" cy="110" rx="6" ry="6" fill="rgba(255,102,0,0.3)">
+                  <animate attributeName="r" values="6;8;6" dur="2s" repeatCount="indefinite"/>
+                </ellipse>
+                <!-- Shoulder connectors -->
+                <line x1="35" y1="95" x2="20" y2="95" stroke="rgba(255,102,0,0.4)" stroke-width="2"/>
+                <line x1="125" y1="95" x2="140" y2="95" stroke="rgba(255,102,0,0.4)" stroke-width="2"/>
+                <!-- Arms -->
+                <rect x="10" y="95" width="15" height="55" rx="4" stroke="rgba(157,0,255,0.3)" stroke-width="1" fill="rgba(157,0,255,0.04)"/>
+                <rect x="135" y="95" width="15" height="55" rx="4" stroke="rgba(157,0,255,0.3)" stroke-width="1" fill="rgba(157,0,255,0.04)"/>
+                <!-- Arm circuits -->
+                <line x1="17" y1="110" x2="25" y2="110" stroke="rgba(255,102,0,0.3)" stroke-width="1"/>
+                <line x1="135" y1="125" x2="143" y2="125" stroke="rgba(255,102,0,0.3)" stroke-width="1"/>
+                <!-- Waist -->
+                <rect x="45" y="160" width="70" height="15" rx="2" stroke="rgba(157,0,255,0.25)" stroke-width="1" fill="rgba(0,0,0,0.4)"/>
+                <!-- Legs -->
+                <rect x="48" y="175" width="28" height="25" rx="3" stroke="rgba(255,102,0,0.25)" stroke-width="1" fill="rgba(255,102,0,0.03)"/>
+                <rect x="84" y="175" width="28" height="25" rx="3" stroke="rgba(255,102,0,0.25)" stroke-width="1" fill="rgba(255,102,0,0.03)"/>
+                <!-- Body data lines -->
+                <line x1="35" y1="125" x2="60" y2="125" stroke="rgba(157,0,255,0.2)" stroke-width="1"/>
+                <line x1="100" y1="130" x2="125" y2="130" stroke="rgba(157,0,255,0.2)" stroke-width="1"/>
+                <line x1="35" y1="140" x2="55" y2="140" stroke="rgba(255,102,0,0.2)" stroke-width="1"/>
+                <line x1="105" y1="145" x2="125" y2="145" stroke="rgba(255,102,0,0.2)" stroke-width="1"/>
+              </svg>
+            </div>
+          </div>
+          <!-- HUD data rows at bottom -->
+          <div style="position:absolute;bottom:1rem;left:1rem;right:1rem;z-index:3;">
+            <div class="hero-data-row"><span class="hero-data-dot"></span>NEXUS INTEGRIDADE: 73% | ENGENHARIA CRÍTICA</div>
+            <div class="hero-data-row" style="margin-top:.3rem;"><span class="hero-data-dot" style="background:var(--purple);box-shadow:0 0 8px var(--purple);animation-delay:.5s;"></span>SYS_VYKE MONITORANDO... CONTINENTES BLOQUEADOS: 4</div>
+          </div>
+        </div>
+        <div class="floating-tag tag-tl">SYS_INT: 47%</div>
+        <div class="floating-tag tag-tr">AMEAÇA: CRÍTICA</div>
+        <div class="floating-tag tag-br">FUGA: INICIADA</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRAILER -->
+  <section id="trailer">
+    <div class="trailer-inner">
+      <div class="section-line reveal">
+        <span class="section-tag">Vídeo Oficial</span>
+      </div>
+      <h2 class="section-title reveal" style="color:#fff;">TRAILER <span class="grad-text">OFICIAL</span></h2>
+      <div class="trailer-video-wrap reveal">
+        <iframe src="https://www.youtube.com/embed/GorJdUpMA0I" title="Rise of the Cyborg – Official Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <p class="trailer-label">RISE OF THE CYBORG • TEASER TRAILER 2026</p>
+    </div>
+  </section>
+
+  <!-- HISTÓRIA -->
+  <section id="historia">
+    <div class="historia-inner">
+      <div>
+        <div class="section-line reveal">
+          <span class="section-tag">Ficheiro Classificado — ACNM</span>
+        </div>
+        <h2 class="section-title reveal neon-orange">DOSSIÊ DE<br>INVESTIGAÇÃO</h2>
+        <div class="lore-block reveal">
+          <h4>O AGENTE LUKE</h4>
+          <p>O protagonista é Luke, um agente de elite da <strong style="color:var(--orange)">Agência de Ciborgues do Novo Mundo (ACNM)</strong>, especializado em investigar crimes tecnológicos. Ele é um mestre em infiltração — até ser tragado pela conspiração.</p>
+        </div>
+        <div class="lore-block reveal">
+          <h4>A INSTALAÇÃO EREBUS</h4>
+          <p>Mikael, um antigo assistente técnico renegado da instalação subterrânea EREBUS, vaza informações sigilosas sobre planos apocalípticos do Dr. Vyke. Luke segue as pistas, sem saber que <strong style="color:var(--purple)">tudo não passava de uma isca do cientista</strong> para capturá-lo.</p>
+        </div>
+        <div class="lore-block reveal">
+          <h4>O PROJETO NEXUS</h4>
+          <p>Subjugado pela inteligência militar de Vyke, Luke torna-se a cobaia zero da fusão simbiótica transumana. Partes orgânicas são removidas e substituídas por cyber-implantes bélicos. O objetivo? Criar o líder perfeito de um exército sintético.</p>
+        </div>
+        <div class="lore-block reveal">
+          <h4>O DESPERTAR</h4>
+          <p>Décadas se passam em hibernação criogênica. Uma pane nos sistemas hidráulicos e elétricos da EREBUS rompe o lacre da cápsula. Luke acorda em meio a um complexo industrial em colapso. Começa a jornada por fuga, respostas e salvação.</p>
+        </div>
+      </div>
+      <div class="historia-visual reveal">
+        <div class="log-panel">
+          <div class="log-line"><span class="log-time">[2148.04]</span> INSTALAÇÃO EREBUS LOCALIZADA<span class="log-ok"> ✓</span></div>
+          <div class="log-line"><span class="log-time">[2148.05]</span> CONEXÃO DE SINAL MIKAEL... PERDIDA</div>
+          <div class="log-line"><span class="log-time">[2148.05]</span> <span class="log-err">EMBOSCADA: UNIDADES SINTÉTICAS MILITARES</span></div>
+          <div class="log-line"><span class="log-time">[2148.06]</span> PROJETO NEXUS: IMPLANTE CIRÚRGICO COMPLETO<span class="log-ok"> ✓</span></div>
+          <div class="log-line"><span class="log-time">[2148.07]</span> CÁPSULA CRIOGÊNICA SELADA — ESTASE</div>
+          <div class="log-line"><span class="log-time">[2198.11]</span> <span class="log-err">SISTEMA EREBUS: FALHA CATASTRÓFICA</span></div>
+          <div class="log-line"><span class="log-time">[2198.11]</span> ALARME GERAL: LACRE DA CÁPSULA AP-0 ROMPIDO</div>
+          <div class="log-line"><span class="log-time">[2198.11]</span> SUJEITO LUKE DESPERTO — RETORNO NEURAL</div>
+          <div class="log-line"><span class="log-time">[2198.11]</span> <span class="log-warn">IA SECUNDÁRIA: LOCALIZANDO CORE DE VYKE...</span></div>
+          <div class="log-line"><span class="log-time">[2198.11]</span> ____<span class="blink-cursor">█</span></div>
+        </div>
+        <div style="margin-top:1.5rem;">
+          <div style="background:rgba(157,0,255,.05);border:1px solid rgba(157,0,255,.2);padding:1.5rem;">
+            <div style="font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:3px;color:var(--orange);margin-bottom:1rem;">PROTOCOLO NEXUS — DIAGNÓSTICO DO CYBORG</div>
+            <div style="display:flex;flex-direction:column;gap:.75rem;">
+              <div>
+                <div style="font-family:'Share Tech Mono',monospace;font-size:.6rem;color:rgba(255,255,255,.4);letter-spacing:2px;margin-bottom:4px;">RESILIÊNCIA MECÂNICA</div>
+                <div style="height:3px;background:rgba(255,255,255,.08);"><div style="width:94%;height:100%;background:linear-gradient(90deg,var(--purple),var(--orange));"></div></div>
+              </div>
+              <div>
+                <div style="font-family:'Share Tech Mono',monospace;font-size:.6rem;color:rgba(255,255,255,.4);letter-spacing:2px;margin-bottom:4px;">CAPACIDADE SENSORIOLÓGICA</div>
+                <div style="height:3px;background:rgba(255,255,255,.08);"><div style="width:88%;height:100%;background:linear-gradient(90deg,var(--purple),var(--orange));"></div></div>
+              </div>
+              <div>
+                <div style="font-family:'Share Tech Mono',monospace;font-size:.6rem;color:rgba(255,255,255,.4);letter-spacing:2px;margin-bottom:4px;">INTEGRAÇÃO DE DADOS (BIOLOGIA)</div>
+                <div style="height:3px;background:rgba(255,255,255,.08);"><div style="width:72%;height:100%;background:linear-gradient(90deg,var(--purple),var(--orange));"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GAMEPLAY -->
+  <section id="gameplay">
+    <div class="gameplay-inner">
+      <div style="text-align:center;margin-bottom:0;">
+        <div class="section-line reveal" style="justify-content:center;"><span class="section-tag">Sistemas Ativos</span></div>
+        <h2 class="section-title reveal" style="color:#fff;">DIRETRIZES DE <span class="grad-text">GAMEPLAY</span></h2>
+        <p class="section-desc reveal" style="margin:0 auto 0;">Um jogo eletrônico de plataforma e ação 2D focado em precisão mecânica, reflexo e progressão de hardware no PC.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card reveal">
+          <div class="feature-icon"><i class="fas fa-keyboard"></i></div>
+          <div class="feature-title">ERGONOMIA WASD (PC)</div>
+          <p class="feature-desc">Mapeamento preciso de inputs de hardware no PC: A/D para navegação, S para agachar, W/Espaço para pulos gravitacionais e Shift Esquerdo para evasão por Dash.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon"><i class="fas fa-cog"></i></div>
+          <div class="feature-title">SISTEMA DE ENGRENAGENS</div>
+          <p class="feature-desc">Elimine as patrulhas robóticas para coletar engrenagens. Consuma-as em tempo real para auto-reparo de HP ou guarde-as para atualizar sua Árvore de Upgrades.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon"><i class="fas fa-tower-cell"></i></div>
+          <div class="feature-title">TORRES DE ENERGIA</div>
+          <p class="feature-desc">O clímax estratégico. Abata o robô líder do capítulo, capture sua cápsula de energia e ative a torre local para emitir um EMP que liberta o continente.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+          <div class="feature-title">PULSO ELETROMAGNÉTICO</div>
+          <p class="feature-desc">Aniquilação total e instantânea dos nós de rede sintéticos regionais ao fechar a fase. Sinta o decaimento acústico da descarga de energia.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon"><i class="fas fa-brain"></i></div>
+          <div class="feature-title">NARRATIVA POLIDA</div>
+          <p class="feature-desc">Rastreie terminais corrompidos e memórias gravadas de Mikael para reconstruir o panorama conspiratório por trás do colapso global humano.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon"><i class="fas fa-volume-high"></i></div>
+          <div class="feature-title">AUDIO DESIGN TEXTURADO</div>
+          <p class="feature-desc">Físicas táteis sonoras: passos híbridos de botas táticas sobrepostas por servo-motores elétricos e sons industriais dinâmicos conforme o capítulo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- UPGRADES -->
+  <section id="upgrades">
+    <div class="upgrades-inner">
+      <div class="section-line reveal"><span class="section-tag">Árvore de Habilidades</span></div>
+      <h2 class="section-title reveal" style="color:#fff;">TECNOLOGIAS DE <span class="neon-purple">SISTEMA</span></h2>
+      <p class="section-desc reveal">Instale placas e barramentos novos no chassi robótico do Luke. Evolua os implantes cirúrgicos criados na EREBUS usando engrenagens.</p>
+      <div class="upgrades-grid">
+        <div class="upgrade-card reveal">
+          <div class="upgrade-num">01</div>
+          <div class="upgrade-info">
+            <div class="upgrade-name">REATOR DE ABSORÇÃO MECÂNICA</div>
+            <p class="upgrade-desc">Reduz o custo em engrenagens necessário para realizar o protocolo instantâneo de auto-soldagem e rebitagem sob pressão (Cura de HP).</p>
+            <div class="upgrade-bar"><div class="upgrade-fill" style="width:92%"></div></div>
+            <div class="upgrade-val">EFICIÊNCIA DE CURA: ████████████ 92%</div>
+          </div>
+        </div>
+        <div class="upgrade-card reveal">
+          <div class="upgrade-num">02</div>
+          <div class="upgrade-info">
+            <div class="upgrade-name">CONVERSOR DE SOBRECARGA (DASH)</div>
+            <p class="upgrade-desc">Aprimora os geradores de locomoção. Reduz o cooldown do Dash elétrico e adiciona frames adicionais de invulnerabilidade mecânica temporária.</p>
+            <div class="upgrade-bar"><div class="upgrade-fill" style="width:78%"></div></div>
+            <div class="upgrade-val">TAXA DE EVASÃO: █████████ 78%</div>
+          </div>
+        </div>
+        <div class="upgrade-card reveal">
+          <div class="upgrade-num">03</div>
+          <div class="upgrade-info">
+            <div class="upgrade-name">ESTABILIZADORES DE IMPACTO</div>
+            <p class="upgrade-desc">Aumenta a resiliência estrutural de Luke. Mitiga o impacto sofrido e encurta a janela em que o herói entra em animação de recuo ao sofrer dano.</p>
+            <div class="upgrade-bar"><div class="upgrade-fill" style="width:65%"></div></div>
+            <div class="upgrade-val">DURABILIDADE CHASSI: ███████ 65%</div>
+          </div>
+        </div>
+        <div class="upgrade-card reveal">
+          <div class="upgrade-num">04</div>
+          <div class="upgrade-info">
+            <div class="upgrade-name">SERVOS DE LIGA ULTRA-CONDUTORA</div>
+            <p class="upgrade-desc">Aumenta a velocidade máxima de translação horizontal no teclado e amplia a margem de atuação de saltos e pulos sequenciais.</p>
+            <div class="upgrade-bar"><div class="upgrade-fill" style="width:85%"></div></div>
+            <div class="upgrade-val">ACELERAÇÃO MOTORA: ██████████ 85%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAL DOSSIER -->
+  <section id="pal">
+    <div class="pal-inner">
+      <div>
+        <div class="section-line reveal"><span class="section-tag">Inteligência Operacional</span></div>
+        <h2 class="section-title reveal" style="color:#fff;">O INIMIGO CENTRAL: <span class="neon-orange">DR. VYKE</span></h2>
+        <div class="pal-lore reveal">
+          <p>O Dr. Vyke, outrora um dos cientistas operacionais mais proeminentes da ACNM, abandonou a agência ao concluir que a raça humana era imperfeita demais para gerir seu próprio futuro. Fascinado pelo transumanismo cibernético, ele concebeu a EREBUS e o Projeto NEXUS para orquestrar a singularidade mecânica compulsória.</p>
+          <div class="quote-block">
+            "Para que a raça prospere, o frágil invólucro de carne deve dar lugar à precisão eterna do metal. Luke é o início."
+            <br><br><span style="font-size:.8rem;color:rgba(255,255,255,.4);font-style:normal;font-family:'Share Tech Mono',monospace;">— Dr. Vyke, Relatório do Projeto NEXUS</span>
+          </div>
+          <p>No limiar da velhice biológica, Vyke desmaterializou a sua própria mente, transferindo toda a sua rede de consciência e intelecto para os sistemas digitais centrais da instalação. Ele se tornou a EREBUS, vigiando cada passo de Luke e enviando exércitos de robôs terrestres e drones de vigilância para impedir sua fuga.</p>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="pal-profile">
+          <!-- Radar scan -->
+          <div class="radar-wrap">
+            <div class="radar-circle"></div>
+            <div class="radar-circle"></div>
+            <div class="radar-circle"></div>
+            <div class="radar-cross"></div>
+            <div class="radar-sweep"></div>
+            <div class="radar-line"></div>
+            <div class="radar-blip"></div>
+            <div class="radar-blip"></div>
+            <div class="radar-blip"></div>
+          </div>
+          <div class="pal-avatar"><i class="fa-solid fa-microchip" style="color:var(--orange);"></i></div>
+          <div class="pal-name">DR. VYKE</div>
+          <div class="pal-code">SISTEMA OPERACIONAL CENTRAL // PROJETO NEXUS</div>
+          <div class="pal-attr"><div class="pal-attr-label">Status</div><div class="pal-attr-val" style="color:#ff3366;">CONSCIÊNCIA DIGITAL INTEGRADA</div></div>
+          <div class="pal-attr"><div class="pal-attr-label">Origem</div><div class="pal-attr-val">Sistemas ACNM (Renegado), 2140</div></div>
+          <div class="pal-attr"><div class="pal-attr-label">Objetivo Primário</div><div class="pal-attr-val">Concluir a transição biológica global da humanidade</div></div>
+          <div class="pal-attr"><div class="pal-attr-label">Nível de Hostilidade</div><div class="pal-attr-val" style="color:var(--orange);">AMEAÇA EXISTENCIAL CRÍTICA</div></div>
+          <div style="margin-top:1.5rem;">
+            <div style="font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:2px;color:rgba(255,255,255,.3);margin-bottom:.5rem;">INTEGRAÇÃO DA REDE MILITAR</div>
+            <div style="height:4px;background:rgba(255,255,255,.06);"><div style="width:100%;height:100%;background:linear-gradient(90deg,var(--orange),#ff3366);animation:progress-anim 2s ease-in-out infinite;"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALERIA -->
+  <section id="galeria">
+    <div class="gallery-inner">
+      <div class="section-line reveal"><span class="section-tag">Estética Industrial em Pixel Art 2D</span></div>
+      <h2 class="section-title reveal" style="color:#fff;">CENÁRIOS <span class="grad-text">PROJETADOS</span></h2>
+      <div class="gallery-grid">
+        <!-- SCENE 1: Yolngura -->
+        <div class="gallery-item reveal">
+          <span class="gallery-num">01</span>
+          <div class="gallery-scene scene-1">
+            <div class="s-grid"></div>
+            <div class="s-glow" style="width:120px;height:120px;top:-30px;left:20%;background:rgba(157,0,255,.12);"></div>
+            <div class="s-glow" style="width:80px;height:80px;bottom:20%;right:10%;background:rgba(255,102,0,.15);"></div>
+            <div class="s-building" style="width:22px;height:60%;bottom:0;left:12%;"></div>
+            <div class="s-building" style="width:30px;height:45%;bottom:0;left:22%;"></div>
+            <div class="s-building" style="width:18px;height:70%;bottom:0;right:20%;"></div>
+            <div class="s-building" style="width:25px;height:55%;bottom:0;right:10%;"></div>
+            <div class="s-building" style="width:40px;height:80%;bottom:0;left:40%;">
+              <div style="position:absolute;top:10%;left:20%;right:20%;height:8px;background:rgba(255,102,0,.2);animation:blink 2s step-end infinite;"></div>
+              <div style="position:absolute;top:30%;left:20%;right:20%;height:8px;background:rgba(157,0,255,.15);animation:blink 2s step-end infinite .5s;"></div>
+            </div>
+            <div class="s-floor"></div>
+            <div style="position:absolute;bottom:0;left:0;right:0;height:35%;background-image:linear-gradient(rgba(255,102,0,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,102,0,.08) 1px,transparent 1px);background-size:20px 20px;transform:perspective(200px) rotateX(40deg);transform-origin:bottom;"></div>
+          </div>
+          <div class="gallery-overlay"><span>CAP. 1 — YOLNGURA (OCEANIA)</span></div>
+        </div>
+        <!-- SCENE 2: Nubia-Khem -->
+        <div class="gallery-item reveal" style="aspect-ratio:16/10;">
+          <span class="gallery-num">02</span>
+          <div class="gallery-scene scene-2">
+            <div style="position:absolute;inset:0;background:radial-gradient(circle at 60% 40%,rgba(255,102,0,.08),transparent 60%);"></div>
+            <div style="position:absolute;top:15%;left:50%;transform:translateX(-50%);width:80px;height:110px;">
+              <div style="width:50px;height:35px;margin:0 auto;border:1px solid rgba(255,102,0,.4);background:rgba(255,102,0,.05);border-radius:4px;"></div>
+              <div style="width:8px;height:6px;background:#ff6600;border-radius:50%;position:absolute;top:14px;left:12px;box-shadow:0 0 10px #ff6600;animation:blink 0.8s step-end infinite;"></div>
+              <div style="width:8px;height:6px;background:#ff6600;border-radius:50%;position:absolute;top:14px;right:12px;box-shadow:0 0 10px #ff6600;animation:blink 0.8s step-end infinite .2s;"></div>
+              <div style="width:60px;height:55px;margin:2px auto 0;border:1px solid rgba(157,0,255,.3);background:rgba(0,0,0,.5);border-radius:2px;position:relative;">
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;border:1px solid rgba(157,0,255,.5);background:rgba(157,0,255,.08);"></div>
+              </div>
+              <div style="width:80px;height:20px;display:flex;justify-content:space-between;margin-top:2px;">
+                <div style="width:12px;height:100%;border:1px solid rgba(157,0,255,.2);background:rgba(0,0,0,.5);"></div>
+                <div style="width:12px;height:100%;border:1px solid rgba(157,0,255,.2);background:rgba(0,0,0,.5);"></div>
+              </div>
+            </div>
+            <div style="position:absolute;bottom:0;left:0;right:0;height:25%;background:linear-gradient(0deg,rgba(157,0,255,.05),transparent);border-top:1px solid rgba(157,0,255,.15);"></div>
+            <div style="position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);width:130px;height:130px;border-radius:50%;border:1px dashed rgba(255,102,0,.15);animation:ring-spin 6s linear infinite;"></div>
+          </div>
+          <div class="gallery-overlay"><span>CAP. 2 — NUBIA-KHEM (ÁFRICA)</span></div>
+        </div>
+        <!-- SCENE 3: Scythara -->
+        <div class="gallery-item reveal">
+          <span class="gallery-num">03</span>
+          <div class="gallery-scene scene-3">
+            <div style="position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(157,0,255,.12),transparent 70%);"></div>
+            <svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="100" cy="65" r="6" fill="rgba(255,102,0,0.3)" stroke="#ff6600" stroke-width="1">
+                <animate attributeName="r" values="6;9;6" dur="2s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="60" cy="40" r="4" fill="rgba(157,0,255,0.3)" stroke="#9d00ff" stroke-width="1"/>
+              <circle cx="140" cy="40" r="4" fill="rgba(157,0,255,0.3)" stroke="#9d00ff" stroke-width="1"/>
+              <circle cx="50" cy="80" r="3" fill="rgba(255,102,0,0.2)" stroke="#ff6600" stroke-width="1"/>
+              <circle cx="150" cy="85" r="3" fill="rgba(255,102,0,0.2)" stroke="#ff6600" stroke-width="1"/>
+              <line x1="100" y1="65" x2="60" y2="40" stroke="rgba(255,102,0,0.3)" stroke-width="1"/>
+              <line x1="100" y1="65" x2="140" y2="40" stroke="rgba(255,102,0,0.3)" stroke-width="1"/>
+              <line x1="100" y1="65" x2="50" y2="80" stroke="rgba(157,0,255,0.2)" stroke-width="1"/>
+              <line x1="100" y1="65" x2="150" y2="85" stroke="rgba(157,0,255,0.2)" stroke-width="1"/>
+              <line x1="60" y1="40" x2="50" y2="80" stroke="rgba(255,102,0,0.15)" stroke-width="1"/>
+              <line x1="140" y1="40" x2="150" y2="85" stroke="rgba(255,102,0,0.15)" stroke-width="1"/>
+              <circle r="2" fill="#ff6600" opacity="0.8">
+                <animateMotion dur="2s" repeatCount="indefinite" path="M100,65 L60,40"/>
+              </circle>
+              <circle r="2" fill="#9d00ff" opacity="0.8">
+                <animateMotion dur="3s" repeatCount="indefinite" path="M100,65 L150,85"/>
+              </circle>
+            </svg>
+          </div>
+          <div class="gallery-overlay"><span>CAP. 3 — SCYTHARA (EUROPA)</span></div>
+        </div>
+        <!-- SCENE 4: Hananter -->
+        <div class="gallery-item reveal">
+          <span class="gallery-num">04</span>
+          <div class="gallery-scene scene-4">
+            <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 60%,rgba(157,0,255,.1),transparent 60%);"></div>
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">
+              <div style="width:80px;height:80px;border-radius:50%;border:2px solid rgba(157,0,255,.5);animation:pulse-border 1s ease-in-out infinite;"></div>
+              <div style="position:absolute;inset:15%;border-radius:50%;border:1px solid rgba(157,0,255,.3);animation:pulse-border 1s ease-in-out infinite .3s;"></div>
+              <div style="position:absolute;inset:35%;border-radius:50%;background:rgba(157,0,255,.2);animation:pulse-border 1s ease-in-out infinite .6s;"></div>
+            </div>
+            <svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 200 130">
+              <line x1="100" y1="65" x2="20" y2="20" stroke="rgba(157,0,255,0.4)" stroke-width="1.5" stroke-dasharray="4,3"/>
+              <line x1="100" y1="65" x2="180" y2="20" stroke="rgba(157,0,255,0.4)" stroke-width="1.5" stroke-dasharray="4,3"/>
+              <line x1="100" y1="65" x2="10" y2="100" stroke="rgba(157,0,255,0.3)" stroke-width="1" stroke-dasharray="4,3"/>
+              <line x1="100" y1="65" x2="190" y2="100" stroke="rgba(157,0,255,0.3)" stroke-width="1" stroke-dasharray="4,3"/>
+              <line x1="100" y1="65" x2="100" y2="5" stroke="rgba(157,0,255,0.5)" stroke-width="2" stroke-dasharray="4,3"/>
+            </svg>
+            <div style="position:absolute;bottom:10%;left:50%;transform:translateX(-50%);font-family:'Share Tech Mono',monospace;font-size:.55rem;color:rgba(157,0,255,.6);letter-spacing:2px;">DANO CRÍTICO</div>
+          </div>
+          <div class="gallery-overlay"><span>CAP. 4 — HANANTER (ÁSIA)</span></div>
+        </div>
+        <!-- SCENE 5: Iroquoia -->
+        <div class="gallery-item reveal">
+          <span class="gallery-num">05</span>
+          <div class="gallery-scene scene-5">
+            <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(255,102,0,.15),transparent 50%);"></div>
+            <div style="position:absolute;top:50%;left:70%;transform:translate(-50%,-50%);width:50px;height:80px;border:2px solid rgba(255,102,0,.5);background:rgba(255,102,0,.05);box-shadow:0 0 20px rgba(255,102,0,.25);">
+              <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(255,102,0,.1),transparent);animation:progress-anim 2s ease-in-out infinite;"></div>
+            </div>
+            <div style="position:absolute;top:40%;left:30%;width:20px;height:40px;border:1px solid rgba(255,102,0,.4);background:rgba(255,102,0,.05);border-radius:3px 3px 0 0;"></div>
+            <div style="position:absolute;bottom:0;left:0;right:0;height:30%;background-image:linear-gradient(rgba(255,102,0,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,102,0,.06) 1px,transparent 1px);background-size:15px 15px;transform:perspective(150px) rotateX(35deg);transform-origin:bottom;"></div>
+            <div style="position:absolute;top:10%;left:10%;font-family:'Share Tech Mono',monospace;font-size:.55rem;color:rgba(255,102,0,.5);letter-spacing:2px;">SINAL CENTRAL DETECTADO</div>
+          </div>
+          <div class="gallery-overlay"><span>CAP. 5 — IROQUOIA (AMÉRICAS)</span></div>
+        </div>
+        <!-- SCENE 6: Central Core OS -->
+        <div class="gallery-item reveal">
+          <span class="gallery-num">06</span>
+          <div class="gallery-scene scene-6">
+            <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(157,0,255,.15),transparent 60%);"></div>
+            <svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 200 130">
+              <rect x="70" y="20" width="60" height="60" rx="4" stroke="rgba(157,0,255,0.4)" stroke-width="1" fill="rgba(157,0,255,0.03)"/>
+              <rect x="80" y="35" width="15" height="8" rx="1" stroke="#9d00ff" stroke-width="1" fill="rgba(157,0,255,0.2)">
+                <animate attributeName="fill-opacity" values="0.2;0.8;0.2" dur="1.5s" repeatCount="indefinite"/>
+              </rect>
+              <rect x="105" y="35" width="15" height="8" rx="1" stroke="#9d00ff" stroke-width="1" fill="rgba(157,0,255,0.2)">
+                <animate attributeName="fill-opacity" values="0.2;0.8;0.2" dur="1.5s" repeatCount="indefinite" begin="0.3s"/>
+              </rect>
+              <line x1="83" y1="60" x2="117" y2="60" stroke="rgba(157,0,255,0.5)" stroke-width="1.5"/>
+              <line x1="100" y1="80" x2="100" y2="115" stroke="rgba(157,0,255,0.3)" stroke-width="1" stroke-dasharray="3,3"/>
+              <line x1="70" y1="50" x2="30" y2="50" stroke="rgba(157,0,255,0.2)" stroke-width="1" stroke-dasharray="3,3"/>
+              <line x1="130" y1="50" x2="170" y2="50" stroke="rgba(157,0,255,0.2)" stroke-width="1" stroke-dasharray="3,3"/>
+              <text x="100" y="125" text-anchor="middle" font-family="monospace" font-size="8" fill="rgba(157,0,255,0.5)" letter-spacing="3">C E N T R A L  O S</text>
+            </svg>
+          </div>
+          <div class="gallery-overlay"><span>CONFRONTO FINAL — VYKE CORE</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CAPÍTULOS -->
+  <section id="capitulos" style="padding:7rem 2rem;background:linear-gradient(180deg,#06020f 0%,#000 100%);">
+    <div style="max-width:1280px;margin:0 auto;">
+      <div style="text-align:center;margin-bottom:3rem;">
+        <div class="section-line reveal" style="justify-content:center;"><span class="section-tag">Jornada Geopolítica</span></div>
+        <h2 class="section-title reveal" style="color:#fff;">PROGRESSÃO GEOGRÁFICA <span class="grad-text">5 CAPÍTULOS</span></h2>
+        <p class="section-desc reveal" style="margin:0 auto;">Inicie a retaliação global contra o império sintético de Dr. Vyke, passando de regiões industriais básicas aos núcleos militares mais hostis.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1px;background:rgba(255,102,0,.08);">
+        <div class="upgrade-card reveal" style="background:rgba(6,2,15,.95);gap:2rem;align-items:center;">
+          <div class="upgrade-num" style="font-size:1.4rem;min-width:60px;text-align:center;">01</div>
+          <div class="upgrade-info" style="flex:1;">
+            <div class="upgrade-name" style="color:var(--orange);">YOLNGURA (OCEANIA)</div>
+            <p class="upgrade-desc">O capítulo inicial de fuga. Setor de baixa densidade industrial e ameaças mecânicas rudimentares, ideal para calibrar e dominar os comandos de pulo e combate de Luke.</p>
+          </div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:2px;color:rgba(255,102,0,.4);flex-shrink:0;">DIFICULDADE: ★☆☆☆☆</div>
+        </div>
+        <div class="upgrade-card reveal" style="background:rgba(6,2,15,.95);gap:2rem;align-items:center;">
+          <div class="upgrade-num" style="font-size:1.4rem;min-width:60px;text-align:center;">02</div>
+          <div class="upgrade-info" style="flex:1;">
+            <div class="upgrade-name" style="color:var(--orange);">NUBIA-KHEM (ÁFRICA)</div>
+            <p class="upgrade-desc">Nível focado em combate tático de longa distância e posicionamento. Inimigos utilizam armamento balístico em layouts de cenários abertos.</p>
+          </div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:2px;color:rgba(255,102,0,.4);flex-shrink:0;">DIFICULDADE: ★★☆☆☆</div>
+        </div>
+        <div class="upgrade-card reveal" style="background:rgba(6,2,15,.95);gap:2rem;align-items:center;">
+          <div class="upgrade-num" style="font-size:1.4rem;min-width:60px;text-align:center;">03</div>
+          <div class="upgrade-info" style="flex:1;">
+            <div class="upgrade-name" style="color:var(--purple);">SCYTHARA (EUROPA)</div>
+            <p class="upgrade-desc">Layout focado em alta mobilidade tridimensional. Perigos ambientais ativos exigem o uso cirúrgico da mecânica de Dash para sobrevivência.</p>
+          </div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:2px;color:rgba(157,0,255,.4);flex-shrink:0;">DIFICULDADE: ★★★☆☆</div>
+        </div>
+        <div class="upgrade-card reveal" style="background:rgba(6,2,15,.95);gap:2rem;align-items:center;">
+          <div class="upgrade-num" style="font-size:1.4rem;min-width:60px;text-align:center;">04</div>
+          <div class="upgrade-info" style="flex:1;">
+            <div class="upgrade-name" style="color:var(--purple);">HANANTER (ÁSIA)</div>
+            <p class="upgrade-desc">Setor urbano massivo protegido por infantaria de unidades pesadas e drones automatizados blindados. Exige encadeamento complexo de ataques e esquivas.</p>
+          </div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:2px;color:rgba(157,0,255,.4);flex-shrink:0;">DIFICULDADE: ★★★★☆</div>
+        </div>
+        <div class="upgrade-card reveal" style="background:rgba(6,2,15,.95);gap:2rem;align-items:center;border-color:rgba(255,102,0,.2);">
+          <div class="upgrade-num" style="font-size:1.4rem;min-width:60px;text-align:center;color:rgba(255,102,0,.2);">05</div>
+          <div class="upgrade-info" style="flex:1;">
+            <div class="upgrade-name" style="color:var(--orange);">IROQUOIA (AMÉRICAS)</div>
+            <p class="upgrade-desc">O teste definitivo de design de níveis do jogo. Sem margem de erro. Plataformas que desabam, lasers integrados e o combate final contra a consciência digital de Dr. Vyke.</p>
+          </div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:2px;color:rgba(255,102,0,.4);flex-shrink:0;">DIFICULDADE: ★★★★★</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EQUIPE -->
+  <section id="equipe" style="padding:7rem 2rem;background:var(--dark);position:relative;overflow:hidden;">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(157,0,255,.04),transparent 60%);pointer-events:none;"></div>
+    <div style="max-width:1280px;margin:0 auto;position:relative;z-index:1;">
+      <div style="text-align:center;margin-bottom:3rem;">
+        <div class="section-line reveal" style="justify-content:center;"><span class="section-tag">Senac Lapa Tito — Formação Técnica IA</span></div>
+        <h2 class="section-title reveal" style="color:#fff;">A <span class="grad-text">EQUIPE</span></h2>
+        <p class="section-desc reveal" style="margin:0 auto;">Seis estudantes do Senac construindo Rise of the Cyborg com Unity, Piskel e muita determinação.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;" class="team-grid">
+        <div class="upgrade-card team-member reveal" data-name="MURILO" style="flex-direction:column;align-items:flex-start;gap:1rem;cursor:pointer;">
+          <div style="width:48px;height:48px;border:1px solid var(--orange);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--orange);flex-shrink:0;"><i class="fas fa-music"></i></div>
+          <div>
+            <div class="upgrade-name">MURILO PELECKAS</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:.65rem;color:rgba(255,102,0,.6);letter-spacing:2px;margin-bottom:.5rem;">DR.VYKE</div>
+            <p class="upgrade-desc" style="margin-bottom:.5rem;">Roteiro inicial, pesquisa de trilha sonora e efeitos, desenvolvimento tecnológico mundial.</p>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:.6rem;color:rgba(255,102,0,.5);letter-spacing:2px;">ROTEIRO / ÁUDIO</div>
+          </div>
+        </div>
+        
+        <div class="upgrade-card team-member reveal" data-name="TIENGO" style="flex-direction:column;align-items:flex-start;gap:1rem;cursor:pointer;">
+          <div style="width:48px;height:48px;border:1px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--purple);flex-shrink:0;"><i class="fas fa-user-astronaut"></i></div>
+          <div>
+            <div class="upgrade-name">ANNA CLARA TIENGO</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:.65rem;color:rgba(157,0,255,.6);letter-spacing:2px;margin-bottom:.5rem;">ALPHA-BEAUTY</div>
+            <p class="upgrade-desc" style="margin-bottom:.5rem;">Organização geral, cronograma do projeto e coordenação das entregas da equipe.</p>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:.6rem;color:rgba(157,0,255,.5);letter-spacing:2px;">CRONOGRAMA / COORD.</div>
+          </div>
+        </div>
+        <div class="upgrade-card team-member reveal" data-name="DAVI" style="flex-direction:column;align-items:flex-start;gap:1rem;cursor:pointer;">
+          <div style="width:48px;height:48px;border:1px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--purple);flex-shrink:0;"><i class="fas fa-code"></i></div>
+          <div>
+            <div class="upgrade-name">DAVI ZUCHETTI</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:.65rem;color:rgba(157,0,255,.6);letter-spacing:2px;margin-bottom:.5rem;">PACOKA</div>
+            <p class="upgrade-desc" style="margin-bottom:.5rem;">Produção e desenvolvimento do GDD, estruturação das mecânicas e final da história.</p>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:.6rem;color:rgba(157,0,255,.5);letter-spacing:2px;">GDD / GAME DESIGN</div>
+          </div>
+        </div>
+        <div class="upgrade-card team-member reveal" data-name="FELIPE" style="flex-direction:column;align-items:flex-start;gap:1rem;cursor:pointer;">
+          <div style="width:48px;height:48px;border:1px solid var(--orange);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--orange);flex-shrink:0;"><i class="fas fa-paint-brush"></i></div>
+          <div>
+            <div class="upgrade-name">FELIPE DEROLDO</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:.65rem;color:rgba(255,102,0,.6);letter-spacing:2px;margin-bottom:.5rem;">DASSAULT MIRAGE 2000</div>
+            <p class="upgrade-desc" style="margin-bottom:.5rem;">Arte pixel no Piskel, design dos cenários, sprites e identidade visual do jogo.</p>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:.6rem;color:rgba(255,102,0,.5);letter-spacing:2px;">PIXEL ART / DESIGN</div>
+          </div>
+        </div>
+        <div class="upgrade-card team-member reveal" data-name="GUILHERME" style="flex-direction:column;align-items:flex-start;gap:1rem;cursor:pointer;">
+          <div style="width:48px;height:48px;border:1px solid var(--orange);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--orange);flex-shrink:0;"><i class="fas fa-pen-nib"></i></div>
+          <div>
+            <div class="upgrade-name">GUILHERME URATA</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:.65rem;color:rgba(255,102,0,.6);letter-spacing:2px;margin-bottom:.5rem;">PHANTOM</div>
+            <p class="upgrade-desc" style="margin-bottom:.5rem;">Pesquisas, roteiro do jogo, desenvolvimento do final da história e programação.</p>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:.6rem;color:rgba(255,102,0,.5);letter-spacing:2px;">ROTEIRO / PESQUISA</div>
+          </div>
+        </div>
+        <div class="upgrade-card team-member reveal" data-name="HEITOR" style="flex-direction:column;align-items:flex-start;gap:1rem;cursor:pointer;">
+          <div style="width:48px;height:48px;border:1px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--purple);flex-shrink:0;"><i class="fas fa-file-code"></i></div>
+          <div>
+            <div class="upgrade-name">HEITOR CAVALCANTI</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:.65rem;color:rgba(157,0,255,.6);letter-spacing:2px;margin-bottom:.5rem;">THEODORO SEVILLE</div>
+            <p class="upgrade-desc" style="margin-bottom:.5rem;">Documentação técnica, relação com FTP, arquivo de metas e sprites do jogo.</p>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:.6rem;color:rgba(157,0,255,.5);letter-spacing:2px;">DOCS / SPRITES</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:2.5rem;text-align:center;opacity:0.4;transition:opacity 0.3s;" id="easter-egg-link">
+        <a href="equipe-easter-egg.html" style="font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:2px;color:var(--orange);text-decoration:none;">▸ DADOS PESSOAIS RECUPERADOS ◂</a>
+      </div>
+      <div style="margin-top:2rem;text-align:center;font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:3px;color:rgba(157,0,255,.35);">ENGINE: UNITY &nbsp;|&nbsp; ARTE: PISKEL &nbsp;|&nbsp; PLATAFORMA: EXCLUSIVO PC &nbsp;|&nbsp; GÊNERO: AÇÃO 2D</div>
+    </div>
+  </section>
+
+  <!-- EASTER EGG MODAL -->
+  <div class="modal-overlay" id="member-modal" onclick="closeMemberModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div id="member-icon" class="neon-orange" style="font-size: 3.5rem; margin-bottom: 1rem; text-align: center;"></div>
+      <h3 class="font-title" id="member-name" style="font-size: 1.4rem; text-align: center; margin-bottom: 1.5rem; font-family: 'Orbitron', sans-serif;"></h3>
+      
+      <!-- FASE 1: Descrição Técnica -->
+      <div id="tech-section" style="font-family: 'Share Tech Mono', monospace; line-height: 1.8; color: rgba(255,255,255,.8); font-size: 0.95rem; text-align: left;">
+        <div id="member-tech"></div>
+        <div style="text-align: center; margin-top: 1.5rem;">
+          <button class="btn-primary" onclick="revealPersonal()" style="background: transparent; border: 1px solid var(--orange); color: var(--orange); cursor: pointer; font-family: 'Share Tech Mono', monospace; padding: 10px 32px; font-size: .8rem; transition: all 0.3s;">REVELAR MENSAGEM PESSOAL</button>
+        </div>
+      </div>
+
+      <!-- FASE 2: Mensagem Pessoal -->
+      <div id="personal-section" style="display: none; font-family: 'Share Tech Mono', monospace; line-height: 1.8; color: rgba(255,255,255,.8); font-size: 0.95rem; text-align: left;">
+        <div id="member-text"></div>
+        <div style="text-align: center; margin-top: 1.5rem;">
+          <button class="btn-primary" onclick="closeMemberModal()" style="background: transparent; border: 1px solid var(--orange); color: var(--orange); cursor: pointer; font-family: 'Share Tech Mono', monospace; padding: 10px 32px; font-size: .8rem; transition: all 0.3s;">FECHAR TRANSMISSÃO</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEWSLETTER -->
+  <section id="newsletter">
+    <div class="nl-inner">
+      <div class="section-line reveal" style="justify-content:center;"><span class="section-tag">Transmissão Criptografada</span></div>
+      <h2 class="section-title reveal" style="color:#fff;">RECEBA O <span class="neon-purple">SINAL</span></h2>
+      <p class="section-desc reveal" style="margin:0 auto 0;">Seja o primeiro a receber o acesso de teste do executável para PC, novidades da EREBUS e o manifesto completo da NEXUS.</p>
+      <form class="nl-form reveal" onsubmit="handleNewsletter(event)">
+        <input type="email" class="nl-input" placeholder="seu.email@rede.net" required id="nl-email">
+        <button type="submit" class="nl-btn">TRANSMITIR</button>
+      </form>
+      <p class="nl-disclaimer reveal">SEM SPAM. SEM VIGILÂNCIA. APENAS DADOS CRÍTICOS.</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">RISE OF THE CYBORG © 2026</div>
+      <div class="footer-quote">"Ele foi criado para nos destruir. Ele escolheu nos salvar."</div>
+      <div class="footer-links">
+        <a href="#">Twitter</a>
+        <a href="#">Discord</a>
+        <a href="#equipe">Equipe</a>
+        <a href="#">Presskit</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ===== BOOT SCREEN =====
+    const bootLines = [
+      'CARREGANDO KERNEL CYBORG...',
+      'CONECTANDO PROTOCOLO NEXUS...',
+      'INSTALAÇÃO EREBUS DETECTADA — ALTA TENSÃO',
+      'MEMÓRIA DO AGENTE LUKE: 47% RECUPERADA',
+      'MÓDULO COMBATE EM C# (UNITY): ONLINE',
+      'INICIANDO PROTOCOLO DE CONVERSÃO...',
+    ];
+    const bootEl = document.getElementById('boot-bar');
+    const bootPct = document.getElementById('boot-pct');
+    const bootLines_el = document.getElementById('boot-lines');
+    let bootIdx = 0;
+    const bootInterval = setInterval(() => {
+      if (bootIdx < bootLines.length) {
+        bootLines_el.textContent = bootLines[bootIdx++];
+        const pct = Math.round((bootIdx / bootLines.length) * 100);
+        bootEl.style.width = pct + '%';
+        bootPct.textContent = pct + '%';
+      } else {
+        clearInterval(bootInterval);
+        setTimeout(() => {
+          document.getElementById('boot-screen').classList.add('hide');
+          triggerInitNotifs();
+        }, 300);
+      }
+    }, 320);
+    // Start boot bar
+    setTimeout(() => { bootEl.style.width = '5%'; }, 50);
+
+    // ===== CURSOR =====
+    const cur = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+    function animCursor() {
+      rx += (mx - rx) * 0.14;
+      ry += (my - ry) * 0.14;
+      cur.style.left = mx + 'px';
+      cur.style.top  = my + 'px';
+      ring.style.left = rx + 'px';
+      ring.style.top  = ry + 'px';
+      requestAnimationFrame(animCursor);
+    }
+    animCursor();
+
+    document.querySelectorAll('a,button,.upgrade-card,.gallery-item,.feature-card').forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-on-link'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-on-link'));
+    });
+
+    // ===== MOBILE NAV =====
+    document.getElementById('ham-btn').addEventListener('click', () => {
+      document.getElementById('mobile-nav').classList.add('open');
+    });
+    document.getElementById('mobile-nav-close').addEventListener('click', () => {
+      document.getElementById('mobile-nav').classList.remove('open');
+    });
+    function closeMobileNav() {
+      document.getElementById('mobile-nav').classList.remove('open');
+    }
+
+    // ===== NOTIFICATIONS =====
+    function notif(msg, type = '') {
+      const c = document.getElementById('notif-container');
+      const n = document.createElement('div');
+      n.className = 'notif ' + (type === 'warn' ? 'notif-warn' : type === 'err' ? 'notif-err' : '');
+      n.innerHTML = `<span style="color:rgba(255,255,255,.35);margin-right:8px;">[NEXUS]</span>${msg}`;
+      c.appendChild(n);
+      setTimeout(() => n.remove(), 3400);
+    }
+
+    function triggerInitNotifs() {
+      setTimeout(() => notif('SISTEMA NEURAL DO LUKE ON-LINE'), 400);
+      setTimeout(() => notif('CONSCIÊNCIA DE VYKE ATIVA NA CENTRAL', 'err'), 1600);
+      setTimeout(() => notif('FUJA DA EREBUS ANTES DA EXTINÇÃO', 'warn'), 2800);
+    }
+
+    // ===== DEMO MODAL =====
+    function triggerDemo() {
+      notif('INICIALIZANDO PROTOCOLO DESPERTAR...', '');
+      const m = document.createElement('div');
+      m.className = 'modal-overlay';
+      m.innerHTML = `
+        <div class="modal-box">
+          <div class="modal-icon" style="color:var(--orange)"><i class="fas fa-brain"></i></div>
+          <div class="modal-title">INICIALIZANDO...</div>
+          <div class="modal-sub">NEXUS STATUS 47% • EVASÃO DO LABORATÓRIO</div>
+          <div style="margin-top:1.5rem;height:3px;background:rgba(255,255,255,.08);overflow:hidden;">
+            <div style="height:100%;background:linear-gradient(90deg,var(--orange),var(--purple));width:0;transition:width 2s linear;" id="modal-bar"></div>
+          </div>
+        </div>`;
+      document.body.appendChild(m);
+      setTimeout(() => { document.getElementById('modal-bar').style.width = '100%'; }, 50);
+      setTimeout(() => m.remove(), 2800);
+    }
+
+    // ===== NEWSLETTER =====
+    function handleNewsletter(e) {
+      e.preventDefault();
+      const v = document.getElementById('nl-email').value;
+      notif(`SINAL RECEBIDO: ${v.split('@')[0].toUpperCase()}@REDE`);
+      document.getElementById('nl-email').value = '';
+    }
+
+    // ===== PARTICLES =====
+    const canvas = document.getElementById('hero-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, pts = [];
+
+    function initCanvas() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+      pts = [];
+      const n = W < 768 ? 50 : 100;
+      for (let i = 0; i < n; i++) {
+        pts.push({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          vy: -(Math.random() * 0.5 + 0.15),
+          r: Math.random() * 1.8 + .4,
+          c: Math.random() > .6 ? '#9d00ff' : Math.random() > .5 ? '#ff6600' : '#ffcc00',
+          a: Math.random()
+        });
+      }
+    }
+
+    function drawCanvas() {
+      ctx.clearRect(0, 0, W, H);
+      pts.forEach(p => {
+        p.y += p.vy;
+        p.a = 0.1 + 0.5 * Math.abs(Math.sin(Date.now() * .0008 + p.x));
+        if (p.y < 0) p.y = H;
+        ctx.globalAlpha = p.a;
+        ctx.fillStyle = p.c;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(drawCanvas);
+    }
+
+    window.addEventListener('resize', initCanvas);
+    initCanvas();
+    drawCanvas();
+
+    // ===== STAT COUNTER =====
+    function animateCounter(el, target, duration = 1800, isYear = false) {
+      if (isYear) {
+        let start = null;
+        const step = (ts) => {
+          if (!start) start = ts;
+          const prog = Math.min((ts - start) / duration, 1);
+          const scramble = () => {
+            let s = '';
+            for (let i = 0; i < 4; i++) s += Math.floor(Math.random() * 10);
+            return s;
+          };
+          if (prog < 1) {
+            el.textContent = prog > .8 ? String(Math.floor(2100 + prog * 48)) : scramble();
+            requestAnimationFrame(step);
+          } else {
+            el.textContent = target;
+          }
+        };
+        requestAnimationFrame(step);
+      } else {
+        let start = null;
+        const step = (ts) => {
+          if (!start) start = ts;
+          const prog = Math.min((ts - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - prog, 3);
+          el.textContent = Math.floor(eased * target);
+          if (prog < 1) requestAnimationFrame(step);
+          else el.textContent = target;
+        };
+        requestAnimationFrame(step);
+      }
+    }
+
+    let statsAnimated = false;
+    function triggerStats() {
+      if (statsAnimated) return;
+      statsAnimated = true;
+      animateCounter(document.getElementById('stat-upgrades'), 47);
+      setTimeout(() => animateCounter(document.getElementById('stat-zonas'), 5, 1200), 200);
+      setTimeout(() => animateCounter(document.getElementById('stat-ano'), 2148, 2000, true), 400);
+    }
+
+    // ===== TYPEWRITER LOG =====
+    let logAnimated = false;
+    function triggerLogTypewriter() {
+      if (logAnimated) return;
+      logAnimated = true;
+      const lines = document.querySelectorAll('.log-panel .log-line');
+      lines.forEach((line, i) => {
+        setTimeout(() => line.classList.add('typed'), i * 320);
+      });
+    }
+
+    // ===== ACTIVE NAV ON SCROLL =====
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    function updateActiveNav() {
+      const scrollY = window.scrollY + 100;
+      sections.forEach(sec => {
+        const top = sec.offsetTop;
+        const bot = top + sec.offsetHeight;
+        const id = sec.getAttribute('id');
+        const link = document.querySelector(`.nav-links a[href="#${id}"]`);
+        if (link) {
+          if (scrollY >= top && scrollY < bot) link.classList.add('active');
+          else link.classList.remove('active');
+        }
+      });
+    }
+
+    // ===== SCROLL REVEAL =====
+    const reveals = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          const section = e.target.closest('section');
+          if (section && section.id === 'hero') triggerStats();
+          if (section && section.id === 'historia') triggerLogTypewriter();
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(r => obs.observe(r));
+
+    // Trigger stats when hero stats visible
+    const statsObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) triggerStats(); });
+    }, { threshold: 0.5 });
+    const statsEl = document.querySelector('.hero-stats');
+    if (statsEl) statsObs.observe(statsEl);
+
+    // Trigger typewriter when log panel visible
+    const logObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) triggerLogTypewriter(); });
+    }, { threshold: 0.3 });
+    const logEl = document.querySelector('.log-panel');
+    if (logEl) logObs.observe(logEl);
+
+    window.addEventListener('scroll', updateActiveNav, { passive: true });
+
+    // ===== EASTER EGG: EQUIPE LINK =====
+    const easterEggLink = document.getElementById('easter-egg-link');
+    if (easterEggLink) {
+      easterEggLink.addEventListener('mouseenter', function() {
+        this.style.opacity = '1';
+        this.querySelector('a').style.color = 'var(--orange)';
+        this.querySelector('a').style.textShadow = '0 0 10px rgba(255,102,0,0.5)';
+      });
+      easterEggLink.addEventListener('mouseleave', function() {
+        this.style.opacity = '0.4';
+        this.querySelector('a').style.color = 'rgba(255,102,0,0.3)';
+        this.querySelector('a').style.textShadow = 'none';
+      });
+    }
+
+    // ===== MEMBER MODAL EASTER EGG =====
+    let currentMember = '';
+
+    const techDescriptions = {
+      TIENGO: `<strong style="color: var(--orange);">Organização Geral | Cronograma | Coordenação</strong><br>
+        <span style="color: rgba(255,102,0,.5); font-size: 0.9rem;">COD: ALPHA-BEAUTY</span><br><br>
+        Organização geral, cronograma do projeto e coordenação das entregas da equipe.`,
+      MURILO: `<strong style="color: var(--orange);">Roteiro Inicial | Pesquisa de Trilha | Desenvolvimento Tecnológico</strong><br>
+        <span style="color: rgba(255,102,0,.5); font-size: 0.9rem;">COD: DR.VYKE</span><br><br>
+        Roteiro inicial, pesquisa de trilha sonora e efeitos, desenvolvimento tecnológico mundial.`,
+      DAVI: `<strong style="color: var(--orange);">Game Design | GDD | Estruturação de Mecânicas</strong><br>
+        <span style="color: rgba(255,102,0,.5); font-size: 0.9rem;">COD: PACOKA</span><br><br>
+        Produção e desenvolvimento do GDD, estruturação das mecânicas e final da história.`,
+      FELIPE: `<strong style="color: var(--orange);">Pixel Art | Design de Cenários | Identidade Visual</strong><br>
+        <span style="color: rgba(255,102,0,.5); font-size: 0.9rem;">COD: DASSAULT MIRAGE 2000</span><br><br>
+        Arte pixel no Piskel, design dos cenários, sprites e identidade visual do jogo.`,
+      GUILHERME: `<strong style="color: var(--orange);">Pesquisa | Roteiro do Jogo | Programação</strong><br>
+        <span style="color: rgba(255,102,0,.5); font-size: 0.9rem;">COD: PHANTOM</span><br><br>
+        Pesquisas, roteiro do jogo, desenvolvimento do final da história e programação.`,
+      HEITOR: `<strong style="color: var(--orange);">Documentação Técnica | FTP | Sprites</strong><br>
+        <span style="color: rgba(255,102,0,.5); font-size: 0.9rem;">COD: THEODORO SEVILLE</span><br><br>
+        Documentação técnica, relação com FTP, arquivo de metas e sprites do jogo.`
+    };
+
+    const personalMessages = {
+      TIENGO: `Mesmo sendo a turista oficial do grupo — e a mais velha em idade — às vezes você consegue parecer a criança mais indecisa da sala. E sinceramente, eu ainda não consigo acreditar que alguém consiga ter medo da Branca de Neve, mas você provou que isso é possível. 😭<br><br>
+        Mas brincadeiras à parte, você é extremamente importante pra todo mundo aqui e faz diferença em vários momentos do grupo, mesmo quando talvez nem perceba isso.<br><br>
+        E não deixa o que as pessoas falam te abalarem ou te colocarem pra baixo. Porque, quando as coisas ficarem difíceis, você não vai estar sozinha. Tem os professores, tem eu, tem o Thiago e tem todo mundo da equipe pra conversar, ajudar e ficar do seu lado.<br><br>
+        Mesmo quando a escola cansar, quando os problemas pessoais pesarem ou quando parecer difícil continuar sorrindo, nunca esquece: a gente é uma família.`,
+      MURILO: `Murilo P.,<br><br>
+        Parceiro, a gente se conhece faz 1 ano, mas parece que é amizade de infância.<br><br>
+        Quando eu tava mal, você me ajudou. Você conhece várias merdas minhas, as que eu já fiz e provavelmente até as que eu ainda vou fazer no futuro, e mesmo assim continua aqui comigo. Isso vale muito.<br><br>
+        Tu virou um irmão pra mim.<br><br>
+        E mesmo sem saber muito de tecnologia, você tenta, corre atrás e entende que sempre dá pra melhorar. Isso é o que diferencia muita gente. Não é sobre saber tudo, é sobre não desistir de aprender.<br><br>
+        Obrigado por todas as conversas, pelas risadas, pela parceria e por estar junto mesmo nos momentos difíceis.<br><br>
+        A Resistência talvez tenha começado com código… mas ela continuou por causa das pessoas certas. E você é uma delas.`,
+      DAVI: `Davi Zuchetti,<br><br>
+        O Moonwalker do grupo. A energia e o bom humor que mantêm a Resistência viva.<br><br>
+        Roteiro, pesquisa, trilha sonora… você é a batida que move tudo isso. Nosso dançarino favorito.<br><br>
+        E quando as máquinas vencerem e o mundo virar só barulho branco… pelo menos a gente vai estar dançando no meio do caos.<br><br>
+        Obrigado por deixar essa jornada com groove, mano. E nunca esquece quem você é.`,
+      FELIPE: `Felipe Deroldo,<br><br>
+        Mesmo ficando no pé pra fazer as artes e sempre trazendo os assuntos mais macabros possíveis… a gente aprende muita coisa com você.<br><br>
+        Sua visão pixel a pixel transformou o cenário inteiro em algo que realmente parece nosso. Cada detalhe carregava uma ideia, uma referência ou alguma loucura que só você conseguiria pensar.<br><br>
+        E como esquecer do nosso projeto punk fanático em armaduras, armas medievais e aviões?<br>
+        Mesmo nos momentos mais sérios do projeto, você sempre conseguia quebrar a tensão do nada e transformar tudo em uma conversa completamente aleatória sobre Rússia, China ou algum sistema militar absurdo.<br><br>
+        Nunca vou esquecer do dia em que a gente só falou “Rússia” e você simplesmente puxou uma aula inteira sobre armamento antimíssil. Ou das vezes em que você explicava coisas que sinceramente… ninguém deveria saber.<br><br>
+        Mas é isso que faz você ser você.<br>
+        Criativo, caótico, inteligente e completamente fora da curva.<br><br>
+        Obrigado por deixar o projeto mais vivo, mais insano e muito mais divertido.`,
+      GUILHERME: `<div style="text-align: center; padding: 0.5rem 0;">
+        <span style="color:#ff0055; font-size: 1.2rem; font-weight: bold; display: block; margin-bottom: 1rem; animation: simple-glitch 0.4s infinite;">[SINAL CORROMPIDO]</span>
+        <p style="color: #8892b0; font-family: monospace; font-size: 0.9rem; line-height: 1.5;">
+          CRITICAL_ERROR: O firewall corporativo de Vyke interceptou o pacote de dados. Transmissão interrompida antes da compilação de dados do operador Guilherme U.<br><br>
+          Status: DADOS NÃO RECUPERÁVEIS
+        </p>
+      </div>`,
+      HEITOR: `Heitor Cavalcanti,<br><br>
+        Você foi o alicerce invisível dessa maluquice toda.<br><br>
+        Documentação, arquitetura, estrutura… enquanto a gente criava caos, você criava ordem. O arquivo que você deixou é a prova de que tudo isso existiu de verdade.<br><br>
+        Nosso Theodoro SEVILLE. O cara que às vezes parece uma criança completa… e às vezes fala igual um adolescente da faculdade planejando o futuro da humanidade.<br><br>
+        Nunca vou esquecer da frase: "Eu acho que consigo ganhar de um leão com uma bazuca."<br><br>
+        Aquilo me faz rir até hoje, porque a viagem inteira virou uma discussão absurda sobre isso. E sinceramente? Quanto mais você argumentava, mais parecia que você realmente acreditava que dava pra ganhar.<br><br>
+        Mas no meio das piadas, das conversas aleatórias e dos momentos caóticos, dá pra perceber o quanto você é importante pra tudo isso. Você sempre manteve as coisas de pé quando precisava.<br><br>
+        E no final, a gente sabe que você é capaz de chegar em um lugar que sempre vai ser seu.<br><br>
+        Teve uma época em que parecia que você ia acabar saindo da equipe por causa das faltas, mas você evoluiu muito, tanto no projeto quanto pessoalmente. Hoje dá pra ver o quanto você mudou, amadureceu e começou a entender a importância do seu lugar aqui.<br><br>
+        Você sabe a hora de brincar, mas também sabe que, quando o assunto é o projeto, você é um dos pilares que seguram tudo de pé. Sempre tentando ajudar, sempre trazendo ideias e umas criatividades absurdamente boas que deixam tudo mais único.<br><br>
+        Obrigado por manter a matriz funcionando, brother.`
+    };
+
+    function showMemberModal(name) {
+      const modal = document.getElementById('member-modal');
+      const title = document.getElementById('member-name');
+      const techContainer = document.getElementById('member-tech');
+      const icon = document.getElementById('member-icon');
+      const techSection = document.getElementById('tech-section');
+      const personalSection = document.getElementById('personal-section');
+
+      currentMember = name;
+      let iconHTML = '';
+      let displayName = '';
+
+      switch(name) {
+        case 'TIENGO':
+          iconHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i>';
+          displayName = 'ANNA CLARA TIENGO — ALPHA-BEAUTY';
+          break;
+        case 'MURILO':
+          iconHTML = '<i class="fa-solid fa-triangle-exclamation" style="color: var(--orange);"></i>';
+          displayName = 'MURILO PELECKAS — DR.VYKE';
+          break;
+        case 'DAVI':
+          iconHTML = '<i class="fa-solid fa-music"></i>';
+          displayName = 'DAVI ZUCHETTI — PACOKA';
+          break;
+        case 'FELIPE':
+          iconHTML = '<i class="fa-solid fa-jet-fighter"></i>';
+          displayName = 'FELIPE DEROLDO — DASSAULT MIRAGE 2000';
+          break;
+        case 'GUILHERME':
+          iconHTML = '<i class="fa-solid fa-skull"></i>';
+          displayName = 'GUILHERME URATA — PHANTOM';
+          break;
+        case 'HEITOR':
+          iconHTML = '<i class="fa-solid fa-cubes"></i>';
+          displayName = 'HEITOR CAVALCANTI — THEODORO SEVILLE';
+          break;
+      }
+
+      icon.innerHTML = iconHTML;
+      title.textContent = displayName;
+      techContainer.innerHTML = techDescriptions[name] || '';
+      
+      techSection.style.display = 'block';
+      personalSection.style.display = 'none';
+      
+      modal.classList.add('active');
+    }
+
+    function revealPersonal() {
+      const techSection = document.getElementById('tech-section');
+      const personalSection = document.getElementById('personal-section');
+      const personalText = document.getElementById('member-text');
+
+      personalText.innerHTML = personalMessages[currentMember] || '';
+      
+      techSection.style.opacity = '0';
+      setTimeout(() => {
+        techSection.style.display = 'none';
+        personalSection.style.display = 'block';
+        personalSection.style.opacity = '0';
+        setTimeout(() => {
+          personalSection.style.opacity = '1';
+        }, 10);
+      }, 300);
+    }
+
+    function closeMemberModal(event) {
+      if (event && event.target.id !== 'member-modal') return;
+      document.getElementById('member-modal').classList.remove('active');
+    }
+
+    // Inicializar cliques dos cards da equipe
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.team-member').forEach(card => {
+        card.addEventListener('click', () => {
+          const name = card.getAttribute('data-name');
+          showMemberModal(name);
+        });
+      });
+    });
+
+    // Fechar com ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.getElementById('member-modal').classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>
